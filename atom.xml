@@ -68,13 +68,13 @@
       <category term="Snippet" scheme="http://yoursite.com/categories/Snippet/"/>
     
     
-      <category term="Coding" scheme="http://yoursite.com/tags/Coding/"/>
-    
       <category term="IoT" scheme="http://yoursite.com/tags/IoT/"/>
     
       <category term="Machine Learning" scheme="http://yoursite.com/tags/Machine-Learning/"/>
     
       <category term="AWS" scheme="http://yoursite.com/tags/AWS/"/>
+    
+      <category term="Coding" scheme="http://yoursite.com/tags/Coding/"/>
     
   </entry>
   
@@ -137,13 +137,13 @@
       <category term="Snippet" scheme="http://yoursite.com/categories/Snippet/"/>
     
     
-      <category term="Coding" scheme="http://yoursite.com/tags/Coding/"/>
-    
       <category term="IoT" scheme="http://yoursite.com/tags/IoT/"/>
     
       <category term="Machine Learning" scheme="http://yoursite.com/tags/Machine-Learning/"/>
     
       <category term="AWS" scheme="http://yoursite.com/tags/AWS/"/>
+    
+      <category term="Coding" scheme="http://yoursite.com/tags/Coding/"/>
     
   </entry>
   
