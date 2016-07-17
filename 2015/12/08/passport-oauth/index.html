@@ -1,0 +1,661 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Coding,Node.js," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Anthroraemon | 人型叮当猫" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Passport是Node.js下管理用户验证及第三方应用授权的包。利用它可以快速开发应用里的Authentication及Authorization流程。下面是一个在MEAN Stak下使用Passport进行用户登录校验及执行OAuth2流获取用户第三方应用数据的例子（代码大部分来自这里）。
+首先新建一个Node.js应用，安装必要的pacakge，如express、mongoose等。然后安">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Passport快速搭建用户验证及第三方应用OAuth授权">
+<meta property="og:url" content="http://yoursite.com/2015/12/08/passport-oauth/index.html">
+<meta property="og:site_name" content="Anthroraemon | 人型叮当猫">
+<meta property="og:description" content="Passport是Node.js下管理用户验证及第三方应用授权的包。利用它可以快速开发应用里的Authentication及Authorization流程。下面是一个在MEAN Stak下使用Passport进行用户登录校验及执行OAuth2流获取用户第三方应用数据的例子（代码大部分来自这里）。
+首先新建一个Node.js应用，安装必要的pacakge，如express、mongoose等。然后安">
+<meta property="og:updated_time" content="2016-03-18T06:24:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Passport快速搭建用户验证及第三方应用OAuth授权">
+<meta name="twitter:description" content="Passport是Node.js下管理用户验证及第三方应用授权的包。利用它可以快速开发应用里的Authentication及Authorization流程。下面是一个在MEAN Stak下使用Passport进行用户登录校验及执行OAuth2流获取用户第三方应用数据的例子（代码大部分来自这里）。
+首先新建一个Node.js应用，安装必要的pacakge，如express、mongoose等。然后安">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/12/08/passport-oauth/"/>
+
+  <title> 使用Passport快速搭建用户验证及第三方应用OAuth授权 | Anthroraemon | 人型叮当猫 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Anthroraemon | 人型叮当猫</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-subscribe">
+          <a href="/atom.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-subscript"></i> <br />
+            
+            訂閱
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用Passport快速搭建用户验证及第三方应用OAuth授权
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2015-12-08T17:02:33+08:00" content="2015-12-08">
+              2015-12-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Snippet/" itemprop="url" rel="index">
+                    <span itemprop="name">Snippet</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/12/08/passport-oauth/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/passport-oauth/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://passportjs.org" target="_blank" rel="external">Passport</a>是Node.js下管理用户验证及第三方应用授权的包。利用它可以快速开发应用里的Authentication及Authorization流程。下面是一个在MEAN Stak下使用Passport进行用户登录校验及执行OAuth2流获取用户第三方应用数据的例子（代码大部分来自<a href="https://github.com/jxm262/hackathon-starter-ejs" target="_blank" rel="external">这里</a>）。</p>
+<p>首先新建一个Node.js应用，安装必要的pacakge，如express、mongoose等。然后安装Passport及第三方应用基于Passport开发的登陆策略（也包括一个本地验证的策略，目前支持Passport的应用列表可以在<a href="http://passportjs.org" target="_blank" rel="external">这里</a>找到），这里还额外装了一个GitHub调用API的包，非必须 - </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">npm install passport</div><div class="line">npm install passport-local</div><div class="line">npm install passport-github</div><div class="line">npm install github-api</div></pre></td></tr></table></figure>
+<p>然后你需要建立一个用户模型 -</p>
+<p><code>models/User.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> bcrypt = <span class="built_in">require</span>(<span class="string">'bcrypt-nodejs'</span>);</div><div class="line"><span class="keyword">var</span> crypto = <span class="built_in">require</span>(<span class="string">'crypto'</span>);</div><div class="line"><span class="keyword">var</span> mongoose = <span class="built_in">require</span>(<span class="string">'mongoose'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> userSchema = <span class="keyword">new</span> mongoose.Schema(&#123;</div><div class="line">  email: &#123; type: <span class="built_in">String</span>, unique: <span class="literal">true</span>, lowercase: <span class="literal">true</span> &#125;,</div><div class="line">  password: <span class="built_in">String</span>,</div><div class="line">  github: <span class="built_in">String</span>,</div><div class="line">  tokens: <span class="built_in">Array</span>,</div><div class="line"></div><div class="line">  profile: &#123;</div><div class="line">    name: &#123; type: <span class="built_in">String</span>, <span class="keyword">default</span>: <span class="string">''</span> &#125;,</div><div class="line">    gender: &#123; type: <span class="built_in">String</span>, <span class="keyword">default</span>: <span class="string">''</span> &#125;,</div><div class="line">    location: &#123; type: <span class="built_in">String</span>, <span class="keyword">default</span>: <span class="string">''</span> &#125;,</div><div class="line">    website: &#123; type: <span class="built_in">String</span>, <span class="keyword">default</span>: <span class="string">''</span> &#125;,</div><div class="line">    picture: &#123; type: <span class="built_in">String</span>, <span class="keyword">default</span>: <span class="string">''</span> &#125;</div><div class="line">  &#125;,</div><div class="line"></div><div class="line">  resetPasswordToken: <span class="built_in">String</span>,</div><div class="line">  resetPasswordExpires: <span class="built_in">Date</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 加密用户密码</div><div class="line"> */</div><div class="line">userSchema.pre(<span class="string">'save'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">next</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> user = <span class="keyword">this</span>;</div><div class="line">  <span class="keyword">if</span> (!user.isModified(<span class="string">'password'</span>)) <span class="keyword">return</span> next();</div><div class="line">  bcrypt.genSalt(<span class="number">10</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, salt</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (err) <span class="keyword">return</span> next(err);</div><div class="line">    bcrypt.hash(user.password, salt, <span class="literal">null</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, hash</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (err) <span class="keyword">return</span> next(err);</div><div class="line">      user.password = hash;</div><div class="line">      next();</div><div class="line">    &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 验证用户密码</div><div class="line"> */</div><div class="line">userSchema.methods.comparePassword = <span class="function"><span class="keyword">function</span>(<span class="params">candidatePassword, cb</span>) </span>&#123;</div><div class="line">  bcrypt.compare(candidatePassword, <span class="keyword">this</span>.password, <span class="function"><span class="keyword">function</span>(<span class="params">err, isMatch</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (err) <span class="keyword">return</span> cb(err);</div><div class="line">    cb(<span class="literal">null</span>, isMatch);</div><div class="line">  &#125;);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = mongoose.model(<span class="string">'User'</span>, userSchema);</div></pre></td></tr></table></figure>
+<p>其中用户的github属性用来储存通过第三方账号登陆后的用户名信息（这里用Github为例子），tokens用来储存不同的第三方应用授权后的token。</p>
+<p>之后需要先配置你的应用在第三方应用处注册的client id和secret -</p>
+<p><code>config/secret.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">module</span>.exports = &#123;</div><div class="line">	github: &#123;</div><div class="line">		clientID: <span class="string">'your client id'</span>,</div><div class="line">		clientSecret: <span class="string">'your client secret'</span></div><div class="line">		callbackURL: <span class="string">'/auth/github/callback'</span>,</div><div class="line">		passReqToCallback: <span class="literal">true</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>之后你需要配置Passport中针对第三方应用的登陆策略 -</p>
+<p><code>config/passport.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> passport = <span class="built_in">require</span>(<span class="string">'passport'</span>);</div><div class="line"><span class="keyword">var</span> LocalStrategy = <span class="built_in">require</span>(<span class="string">'passport-local'</span>).Strategy;</div><div class="line"><span class="keyword">var</span> GitHubStrategy = <span class="built_in">require</span>(<span class="string">'passport-github'</span>).Strategy;</div><div class="line"></div><div class="line"><span class="keyword">var</span> secrets = <span class="built_in">require</span>(<span class="string">'./secrets'</span>);</div><div class="line"><span class="keyword">var</span> User = <span class="built_in">require</span>(<span class="string">'../models/User'</span>);</div><div class="line"></div><div class="line">passport.serializeUser(<span class="function"><span class="keyword">function</span>(<span class="params">user, done</span>) </span>&#123;</div><div class="line">  done(<span class="literal">null</span>, user.id);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">passport.deserializeUser(<span class="function"><span class="keyword">function</span>(<span class="params">id, done</span>) </span>&#123;</div><div class="line">  User.findById(id, <span class="function"><span class="keyword">function</span>(<span class="params">err, user</span>) </span>&#123;</div><div class="line">    done(err, user);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 利用User.js中定义的comparePassword方法进行本地用户登录验证</div><div class="line"> */</div><div class="line">passport.use(<span class="keyword">new</span> LocalStrategy(&#123; usernameField: <span class="string">'email'</span> &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">email, password, done</span>) </span>&#123;</div><div class="line">  email = email.toLowerCase();</div><div class="line">  User.findOne(&#123; email: email &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, user</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!user) <span class="keyword">return</span> done(<span class="literal">null</span>, <span class="literal">false</span>, &#123; message: <span class="string">'Email '</span> + email + <span class="string">' not found'</span>&#125;);</div><div class="line">    user.comparePassword(password, <span class="function"><span class="keyword">function</span>(<span class="params">err, isMatch</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (isMatch) &#123;</div><div class="line">        <span class="keyword">return</span> done(<span class="literal">null</span>, user);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> done(<span class="literal">null</span>, <span class="literal">false</span>, &#123; message: <span class="string">'Invalid email or password.'</span> &#125;);</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;));</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 利用GitHub提供的第三方账号登录功能登陆验证</div><div class="line"> * 首先判断用户是否已经本地登陆，</div><div class="line"> * 如果本地已登陆，检测该用户是否已经绑定了一个GitHub账号，没有的话再继续。</div><div class="line"> * 如果用户没有本地登陆或者未绑定GitHub账号，通过调用GitHub的OAuth授权页面进行用户授权。</div><div class="line"> * 得到授权后通过GitHub返回的用户信息更新用户记录。</div><div class="line"> * 如果发现GitHub返回的用户Email已经存在，则提示登陆后再绑定。</div><div class="line"> * accessToken用于未来调用第三方应用API</div><div class="line"> * refreshToken用于后台更新要过期的accessToken</div><div class="line"> * profile中包含该用户在第三方应用的数据。</div><div class="line"> */</div><div class="line"></div><div class="line">passport.use(<span class="keyword">new</span> GitHubStrategy(secrets.github, <span class="function"><span class="keyword">function</span>(<span class="params">req, accessToken, refreshToken, profile, done</span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (req.user) &#123;</div><div class="line">    User.findOne(&#123; github: profile.id &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, existingUser</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (existingUser) &#123;</div><div class="line">        req.flash(<span class="string">'errors'</span>, &#123; msg: <span class="string">'用户已绑定GitHub账号！'</span> &#125;);</div><div class="line">        done(err);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        User.findById(req.user.id, <span class="function"><span class="keyword">function</span>(<span class="params">err, user</span>) </span>&#123;</div><div class="line">          user.github = profile.id;</div><div class="line">          user.tokens.push(&#123; kind: <span class="string">'github'</span>, accessToken: accessToken &#125;);</div><div class="line">          user.profile.name = user.profile.name || profile.displayName;</div><div class="line">          user.profile.picture = user.profile.picture || profile._json.avatar_url;</div><div class="line">          user.profile.location = user.profile.location || profile._json.location;</div><div class="line">          user.profile.website = user.profile.website || profile._json.blog;</div><div class="line">          user.save(<span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">            req.flash(<span class="string">'info'</span>, &#123; msg: <span class="string">'成功绑定GitHub账号！'</span> &#125;);</div><div class="line">            done(err, user);</div><div class="line">          &#125;);</div><div class="line">        &#125;);</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    User.findOne(&#123; github: profile.id &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, existingUser</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (existingUser) <span class="keyword">return</span> done(<span class="literal">null</span>, existingUser);</div><div class="line">      User.findOne(&#123; email: profile._json.email &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">err, existingEmailUser</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (existingEmailUser) &#123;</div><div class="line">          req.flash(<span class="string">'errors'</span>, &#123; msg: <span class="string">'该用户已注册，请登陆后再绑定GitHub账号'</span> &#125;);</div><div class="line">          done(err);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">          <span class="keyword">var</span> user = <span class="keyword">new</span> User();</div><div class="line">          user.email = profile._json.email;</div><div class="line">          user.github = profile.id;</div><div class="line">          user.tokens.push(&#123; kind: <span class="string">'github'</span>, accessToken: accessToken &#125;);</div><div class="line">          user.profile.name = profile.displayName;</div><div class="line">          user.profile.picture = profile._json.avatar_url;</div><div class="line">          user.profile.location = profile._json.location;</div><div class="line">          user.profile.website = profile._json.blog;</div><div class="line">          user.save(<span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">            done(err, user);</div><div class="line">          &#125;);</div><div class="line">        &#125;</div><div class="line">      &#125;);</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;));</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 在Controller中使用的判断是否已经登陆验证的Helper</div><div class="line"> */</div><div class="line">exports.isAuthenticated = <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (req.isAuthenticated()) <span class="keyword">return</span> next();</div><div class="line">  res.redirect(<span class="string">'/login'</span>);</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 在Controller中使用的判断是否已经得到第三方应用授权的Helper</div><div class="line"> */</div><div class="line">exports.isAuthorized = <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> provider = req.path.split(<span class="string">'/'</span>).slice(<span class="number">-1</span>)[<span class="number">0</span>];</div><div class="line">  <span class="keyword">if</span> (_.find(req.user.tokens, &#123; kind: provider &#125;)) &#123;</div><div class="line">    next();</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    res.redirect(<span class="string">'/auth/'</span> + provider);</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>这样Passport的设置就完成了。之后则是要在各个controller调用相应的方法。</p>
+<p>首先在<code>app.js</code>中调用刚刚在<code>passport.js</code>中定义的authentication及authorization的方法 - </p>
+<p><code>app.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * API keys and Passport configuration.</div><div class="line"> */</div><div class="line"><span class="keyword">var</span> secrets = <span class="built_in">require</span>(<span class="string">'./config/secrets'</span>);</div><div class="line"><span class="keyword">var</span> passportConf = <span class="built_in">require</span>(<span class="string">'./config/passport'</span>);</div><div class="line"></div><div class="line">app.get(<span class="string">'/auth/github'</span>, passport.authenticate(<span class="string">'github'</span>));</div><div class="line">app.get(<span class="string">'/auth/github/callback'</span>, passport.authenticate(<span class="string">'github'</span>, &#123; failureRedirect: <span class="string">'/login'</span> &#125;), <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</div><div class="line">  res.redirect(req.session.returnTo || <span class="string">'/'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">app.get(<span class="string">'/api/github'</span>, passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getGithub);</div></pre></td></tr></table></figure>
+<p>上面一共定义了三个Controller，第一个用于处理GitHub登陆，调用Passport中的GitHub登陆策略。第二个用于处理GitHub登陆后的回调。第三个用于在用户登录后调用第三方API获取更多用户信息，在调用其他方法前先检查用户是否已经登录及是否已经获得了授权。其中第三个controller在得到正确授权后就可以调用其他API了 - </p>
+<p><code>controllers/api.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> User = <span class="built_in">require</span>(<span class="string">'../models/User'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> Github;</div><div class="line">exports.getGithub = <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</div><div class="line">  Github = <span class="built_in">require</span>(<span class="string">'github-api'</span>);</div><div class="line"></div><div class="line">  <span class="keyword">var</span> token = _.find(req.user.tokens, &#123; kind: <span class="string">'github'</span> &#125;);</div><div class="line">  <span class="keyword">var</span> github = <span class="keyword">new</span> Github(&#123; token: token.accessToken &#125;);</div><div class="line">  </div><div class="line">  <span class="comment">/**</span></div><div class="line">   * Do whatever you want with the GitHub API below</div><div class="line">   */</div><div class="line">  </div><div class="line">  <span class="keyword">var</span> repo = github.getRepo(<span class="string">'sahat'</span>, <span class="string">'requirejs-library'</span>);</div><div class="line">  repo.show(<span class="function"><span class="keyword">function</span>(<span class="params">err, repo</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (err) <span class="keyword">return</span> next(err);</div><div class="line">    res.render(<span class="string">'api/github'</span>, &#123;</div><div class="line">      title: <span class="string">'GitHub API'</span>,</div><div class="line">      repo: repo</div><div class="line">    &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>好了，后端的配置全部完成了，然后就是前端了。代码这里不贴了，基本上就是在登陆页面上加上第三方应用的登陆按钮，指向<code>/auth/github</code>,然后在你需要展示第三方应用数据的页面前调用<code>/api/github</code>获取数据渲染就可以了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Coding/" rel="tag">#Coding</a>
+          
+            <a href="/tags/Node-js/" rel="tag">#Node.js</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/06/hackathon-thoughts/" rel="next" title="关于Hackathon的一些Learnings">
+                <i class="fa fa-chevron-left"></i> 关于Hackathon的一些Learnings
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/08/humanapi-demo/" rel="prev" title="HumanAPI介绍及Demo">
+                HumanAPI介绍及Demo <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/12/08/passport-oauth/"
+           data-title="使用Passport快速搭建用户验证及第三方应用OAuth授权" data-url="http://yoursite.com/2015/12/08/passport-oauth/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.png"
+               alt="Anthroraemon" />
+          <p class="site-author-name" itemprop="name">Anthroraemon</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分類</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">標籤</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目錄</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anthroraemon</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anthroraemon"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

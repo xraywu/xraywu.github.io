@@ -1,0 +1,681 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Coding,Node.js," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Anthroraemon | 人型叮当猫" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="HumanAPI是美国的一家初创公司，其卖点是可以把单一用户在不同健康管理的应用中的数据聚合起来并通过统一的API供第三方应用进行访问。目前支持的数据源包括了大部分的主流可穿戴设备如Fitbit、Jawbone等，以及23andMe的基因测序信息、Apple Health Kit的科研数据甚至于电子医疗病例EMR系统中的患者就医信息。下面我会对HumanAPI做一点介绍并搭建一个简单的Demo。D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HumanAPI介绍及Demo">
+<meta property="og:url" content="http://yoursite.com/2016/01/08/humanapi-demo/index.html">
+<meta property="og:site_name" content="Anthroraemon | 人型叮当猫">
+<meta property="og:description" content="HumanAPI是美国的一家初创公司，其卖点是可以把单一用户在不同健康管理的应用中的数据聚合起来并通过统一的API供第三方应用进行访问。目前支持的数据源包括了大部分的主流可穿戴设备如Fitbit、Jawbone等，以及23andMe的基因测序信息、Apple Health Kit的科研数据甚至于电子医疗病例EMR系统中的患者就医信息。下面我会对HumanAPI做一点介绍并搭建一个简单的Demo。D">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2014.47.36.png">
+<meta property="og:image" content="https://www.filepicker.io/api/file/t94kQyxTRyUxJpuiv8xg">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2017.06.54.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2017.07.14.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2017.07.23.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-10%20at%2014.33.29.png">
+<meta property="og:updated_time" content="2016-03-18T06:24:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HumanAPI介绍及Demo">
+<meta name="twitter:description" content="HumanAPI是美国的一家初创公司，其卖点是可以把单一用户在不同健康管理的应用中的数据聚合起来并通过统一的API供第三方应用进行访问。目前支持的数据源包括了大部分的主流可穿戴设备如Fitbit、Jawbone等，以及23andMe的基因测序信息、Apple Health Kit的科研数据甚至于电子医疗病例EMR系统中的患者就医信息。下面我会对HumanAPI做一点介绍并搭建一个简单的Demo。D">
+<meta name="twitter:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2014.47.36.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/08/humanapi-demo/"/>
+
+  <title> HumanAPI介绍及Demo | Anthroraemon | 人型叮当猫 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Anthroraemon | 人型叮当猫</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-subscribe">
+          <a href="/atom.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-subscript"></i> <br />
+            
+            訂閱
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                HumanAPI介绍及Demo
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2016-01-08T14:36:57+08:00" content="2016-01-08">
+              2016-01-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Snippet/" itemprop="url" rel="index">
+                    <span itemprop="name">Snippet</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/01/08/humanapi-demo/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/08/humanapi-demo/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://www.humanapi.co/" target="_blank" rel="external">HumanAPI</a>是美国的一家初创公司，其卖点是可以把单一用户在不同健康管理的应用中的数据聚合起来并通过统一的API供第三方应用进行访问。目前支持的数据源包括了大部分的主流可穿戴设备如Fitbit、Jawbone等，以及23andMe的基因测序信息、Apple Health Kit的科研数据甚至于电子医疗病例EMR系统中的患者就医信息。下面我会对HumanAPI做一点介绍并搭建一个简单的Demo。Demo搭建在之前介绍过的<a href="https://github.com/jxm262/hackathon-starter-ejs" target="_blank" rel="external">Hackathon Starter EJS</a>框架上。</p>
+<p>首先你需要去HumanAPI上申请一个<a href="https://developer.humanapi.co/signup" target="_blank" rel="external">账号</a>。注册登陆以后进入HumanAPI的<a href="https://developer.humanapi.co/" target="_blank" rel="external">Dashbord</a>。在Dashboard上点击右上方的<code>Add New Application</code>按钮创建一个client app。创建以后，从Dashboard上点击新创建的App进入配置页面。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2014.47.36.png" alt="HumanAPI界面"></p>
+<p>其中有四个选项 - 1）Data Inputs，用于管理你的Client想要获取的用户第三方系统数据；2）Users，用于管理连接到你的Client的用户；3）App Settings，其中有你的client id和secret和管理员账户配置等；4）Notification，用于配置提示信息。这里先进到<code>App Settings</code>里面，记下你的client id和client secret。</p>
+<p>下面我们就在Hackathon Starter EJS的基础上添加一个HumanAPI的Connection。先下载源码库 - </p>
+<p><code>git clone https://github.com/jxm262/hackathon-starter-ejs.git</code></p>
+<p>首先要搞定的是如何让用户连接到HumanAPI并获取他们的第三方数据。这里值得注意的是，HumanAPI并没有使用传统的OAuth流程做用户的授权，而是建立了一个他们自定义的用户授权流，由你的client为每个用户创建独立的HumanAPI用户记录。这样做的好处是用户不需要额外申请一个HumanAPI的账号，而只需要有其他第三方应用的账号（如Fitbit）即可授权你的client访问，同时如果有多个client使用了HumanAPI的服务，同一个用户也可以控制每一个client可以访问的第三方应用权限。</p>
+<p><img src="https://www.filepicker.io/api/file/t94kQyxTRyUxJpuiv8xg" alt="HumanAPI用户登录授权流"></p>
+<p>可以看到，由你的client首先发起通信，向服务器发送你的clent id及用户在你的app中的内部id到服务器，获取一个session token。之后你则把session token连同你的client secret发回给服务器获取API的access token及public token（用途之后会提到）。具体的实现上，HumanAPI则提供了一个<a href="https://connect.humanapi.co/connect.js" target="_blank" rel="external">javascript库</a>以简化流程。</p>
+<p>那么，在前端页面先放置一个image button（HumanAPI官方button素材在<a href="https://connect.humanapi.co/assets/button/blue.png" target="_blank" rel="external">这里</a>）。在读取该页面的同时，controller需要获取你的client的clientId及该登录用户在你的app中的id并传到前端。具体的controller示例代码会贴在下面。这里先假设已经取到了。</p>
+<p><code>humanapi.html</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'https://connect.humanapi.co/connect.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'scripts/humanapi.js'</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">'connect-health-data-btn'</span> <span class="attr">src</span>=<span class="string">'https://connect.humanapi.co/assets/button/blue.png'</span> <span class="attr">onClick</span>=<span class="string">"connectHumanAPI("</span><span class="attr">clientUserId</span>", "<span class="attr">clientId</span>", "<span class="attr">publicToken</span>")" /&gt;</span></div></pre></td></tr></table></figure>
+<p>其中，如果用户是第一次绑定授权HumanAPI，publicToken为空，否则还需要取回之前绑定时获取的public token用于匹配该用户。</p>
+<p><code>scripts/humanapi.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">connectHumanAPI</span>(<span class="params">userId, clientId, publicToken</span>)</span>&#123;</div><div class="line">  <span class="keyword">var</span> options = &#123;</div><div class="line">  clientUserId: <span class="built_in">encodeURIComponent</span>(userId),</div><div class="line">  clientId: clientId, <span class="comment">// grab it from app settings page</span></div><div class="line">  publicToken: publicToken,  <span class="comment">// 新用户为空</span></div><div class="line"></div><div class="line">  finish: <span class="function"><span class="keyword">function</span>(<span class="params">err, sessionTokenObject</span>) </span>&#123;</div><div class="line">      <span class="comment">// 用户完成授权后需要将HumanAPI返回的session token送到你的服务器端进行保存</span></div><div class="line">      sessionTokenObject.userId = userId;</div><div class="line">      $.post(<span class="string">'/auth/humanapi/callback'</span>, sessionTokenObject, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line"></div><div class="line">      &#125;)</div><div class="line">      .done(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        location.reload();</div><div class="line">      &#125;)</div><div class="line">      .fail(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"></div><div class="line">      &#125;)</div><div class="line">      .always(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        location.reload();</div><div class="line">      &#125;);</div><div class="line">  &#125;,</div><div class="line">  close: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="comment">// 处理用户未选择任何第三方应用连接时的额外提示</span></div><div class="line">  &#125;,</div><div class="line">  error: <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">      <span class="comment">// callback出错时的处理方案</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">HumanConnect.open(options);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上代码中最重要的就是<code>finish</code>后的回调，需要把HumanAPI送回的token保存到你的用户记录中。下面是回调的处理代码。</p>
+<p><code>app.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">app.post(<span class="string">'/auth/humanapi/callback'</span>, apiController.postHumanAPIAuth);</div></pre></td></tr></table></figure>
+<p><code>controllers/api.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * GET /api/humanapi</div><div class="line"> * HumanAPI example.</div><div class="line"> */</div><div class="line"></div><div class="line"> exports.getHumanAPI = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</div><div class="line">   request = <span class="built_in">require</span>(<span class="string">'request'</span>);</div><div class="line"></div><div class="line">   <span class="keyword">var</span> publicToken = <span class="string">''</span>;</div><div class="line">   <span class="keyword">var</span> accessToken = <span class="string">''</span>;</div><div class="line"></div><div class="line">   <span class="keyword">if</span> (_.find(req.user.tokens, &#123; kind: <span class="string">'humanapi'</span> &#125;)) &#123;</div><div class="line">     <span class="keyword">var</span> token = _.find(req.user.tokens, &#123; kind: <span class="string">'humanapi'</span> &#125;);</div><div class="line">     publicToken = token.publicToken;</div><div class="line">     accessToken = token.accessToken;</div><div class="line"></div><div class="line">     <span class="keyword">async</span>.parallel(&#123;</div><div class="line">       getSources: <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</div><div class="line">         <span class="keyword">var</span> query = &#123; access_token : accessToken &#125;;</div><div class="line">         <span class="keyword">var</span> qs = querystring.stringify(query);</div><div class="line">         request.get(&#123;url: <span class="string">'https://api.humanapi.co/v1/human/sources?'</span> + qs&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">error, request, body</span>) </span>&#123;</div><div class="line">           <span class="keyword">if</span> (error) <span class="keyword">return</span> done(error);</div><div class="line">           done(error, body);</div><div class="line">         &#125;);</div><div class="line">       &#125;</div><div class="line">     &#125;,</div><div class="line">     <span class="function"><span class="keyword">function</span>(<span class="params">err, results</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (err) <span class="keyword">return</span> done(err);</div><div class="line">          res.render(<span class="string">'api/humanapi'</span>, &#123;</div><div class="line">            title: <span class="string">'Human API'</span>,</div><div class="line">            publicToken: publicToken,</div><div class="line">            clientUserId: req.user._id,</div><div class="line">            clientId: secrets.humanapi.clientId,</div><div class="line">            accessToken : accessToken,</div><div class="line">            sources : <span class="built_in">JSON</span>.parse(results.getSources),</div><div class="line">        &#125;);</div><div class="line">      &#125;);</div><div class="line">   &#125;<span class="keyword">else</span>&#123;</div><div class="line">     res.render(<span class="string">'api/humanapi'</span>, &#123;</div><div class="line">       title: <span class="string">'Human API'</span>,</div><div class="line">       publicToken: publicToken,</div><div class="line">       clientUserId: req.user._id,</div><div class="line">       clientId: secrets.humanapi.clientId,</div><div class="line">       accessToken : accessToken</div><div class="line">     &#125;);</div><div class="line">   &#125;</div><div class="line"> &#125;;</div><div class="line"></div><div class="line">exports.postHumanAPIAuth = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</div><div class="line">   request = <span class="built_in">require</span>(<span class="string">'request'</span>);</div><div class="line">   <span class="keyword">var</span> sessionTokenObject = req.body;</div><div class="line">   <span class="comment">// grab client secret from app settings page and `sign` `sessionTokenObject` with it.</span></div><div class="line">   sessionTokenObject.clientSecret = secrets.humanapi.clientSecret;</div><div class="line"></div><div class="line">   <span class="keyword">async</span>.parallel(&#123;</div><div class="line">     postSessionToken: <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</div><div class="line">       request.post(&#123;url: secrets.humanapi.tokenURL, json: sessionTokenObject &#125;, <span class="function"><span class="keyword">function</span>(<span class="params">error, request, body</span>) </span>&#123;</div><div class="line">         <span class="keyword">if</span> (request.statusCode === <span class="number">401</span>) <span class="keyword">return</span> done(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'Missing or Invalid HumanAPI Key'</span>));</div><div class="line">         <span class="comment">// 需要存下access token、public token和用户在HumanAPI里的id</span></div><div class="line">         User.findById(sessionTokenObject.userId, <span class="function"><span class="keyword">function</span>(<span class="params">err, user</span>) </span>&#123;</div><div class="line">           user.tokens.push(&#123; kind: <span class="string">'humanapi'</span>, accessToken: body.accessToken, publicToken: body.publicToken, humanId: body.humanId&#125;);</div><div class="line">           user.save(<span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">             req.flash(<span class="string">'error'</span>, &#123; msg: <span class="string">'Error'</span>&#125;);</div><div class="line">           &#125;);</div><div class="line">         &#125;);</div><div class="line">         done(error, body);</div><div class="line">       &#125;);</div><div class="line">     &#125;</div><div class="line">   &#125;,</div><div class="line">   <span class="function"><span class="keyword">function</span>(<span class="params">err, results</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (err) <span class="keyword">return</span> done(err);</div><div class="line">      req.flash(<span class="string">'success'</span>, &#123; msg: <span class="string">'HumanAPI account has been linked.'</span>&#125;);</div><div class="line">      res.status(<span class="number">200</span>).end();</div><div class="line">      <span class="comment">//res.redirect('/api/humanapi');</span></div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>解释一下，这里<code>getHumanAPI()</code>方法即上面提到的从controller中获取用户client id并送到前端为之后connect HumanAPI做准备。其中还做了一件额外的事情，即当中的<code>getSources()</code>方法。该方法的作用是对已经绑定过HumanAPI及第三方应用数据的用户获取他们已经绑定过的应用列表及能获取的数据类型（如activity、sleep等），传送到前端进行展示。</p>
+<p><code>postHumanAPIAuth()</code>则是处理回调的方法。主要有两个作用：1）Parse HumanAPI返回的用户token，并储存到用户对象中供下次使用；2）将获取的session token连同储存在后台的client secret提交到HumanAPI，以获取真正用于访问API的access token（这样一来你的client secret永远是安全的）。</p>
+<p>如此一来，就完成了一个完整的针对HumanAPI的授权流。下一步则是利用HumanAPI提供的Chart API根据用户数据创建可视化图表。HumanAPI通过<code>iframe</code>提供图表。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">'https://chart.humanapi.co/v1/human/activities/summaries?chart_token=demo'</span>/&gt;</span></div></pre></td></tr></table></figure>
+<p>其中chart_token需要用户的access token去交换。</p>
+<p><code>controllers/api.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">exports.getHumanAPIChart = <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</div><div class="line">  request = <span class="built_in">require</span>(<span class="string">'request'</span>);</div><div class="line"></div><div class="line">  <span class="keyword">var</span> type = req.query.type;</div><div class="line"></div><div class="line">  <span class="keyword">var</span> humanId = <span class="string">''</span>;</div><div class="line">  <span class="keyword">var</span> accessToken = <span class="string">''</span>;</div><div class="line">  <span class="keyword">var</span> publicToken = <span class="string">''</span>;</div><div class="line">  <span class="keyword">var</span> clientId = secrets.humanapi.clientId;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (_.find(req.user.tokens, &#123; kind: <span class="string">'humanapi'</span> &#125;)) &#123;</div><div class="line">    <span class="keyword">var</span> token = _.find(req.user.tokens, &#123; kind: <span class="string">'humanapi'</span> &#125;);</div><div class="line">    humanId = token.humanId;</div><div class="line">    accessToken = token.accessToken;</div><div class="line">    publicToken = token.publicToken;</div><div class="line"></div><div class="line">    <span class="keyword">if</span>(!type)&#123;</div><div class="line">      res.render(<span class="string">'api/humanapi'</span>, &#123;</div><div class="line">        title: <span class="string">'Human API'</span>,</div><div class="line">        publicToken: publicToken,</div><div class="line">        clientUserId: req.user._id,</div><div class="line">        clientId: secrets.humanapi.clientId,</div><div class="line">        accessToken : accessToken</div><div class="line">      &#125;);</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">      <span class="comment">// 使用access token及用户在HumanAPI的id和client id换取chart token</span></div><div class="line">      <span class="keyword">async</span>.parallel(&#123;</div><div class="line">        getChartToken: <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</div><div class="line">          <span class="keyword">var</span> query = &#123; humanId : humanId, clientId : clientId, accessToken : accessToken &#125;;</div><div class="line">          <span class="keyword">var</span> qs = <span class="built_in">JSON</span>.stringify(query);</div><div class="line">          request.post(&#123;url: <span class="string">'https://chart.humanapi.co/v1/tokens/chart'</span>, form: query&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">error, request, body</span>) </span>&#123;</div><div class="line">            <span class="keyword">if</span> (error) <span class="keyword">return</span> done(error);</div><div class="line">            done(error, body);</div><div class="line">          &#125;);</div><div class="line">        &#125;</div><div class="line">      &#125;,</div><div class="line">      <span class="function"><span class="keyword">function</span>(<span class="params">err, results</span>) </span>&#123;</div><div class="line">         <span class="keyword">if</span> (err) <span class="keyword">return</span> done(err);</div><div class="line">           <span class="keyword">var</span> token = <span class="built_in">JSON</span>.parse(results.getChartToken);</div><div class="line">           res.render(<span class="string">'api/humanapichart'</span>, &#123;</div><div class="line">             title: <span class="string">'Human API Chart'</span>,</div><div class="line">             type: type,</div><div class="line">             chartToken : token.chartToken,</div><div class="line">         &#125;);</div><div class="line">       &#125;);</div><div class="line">    &#125;</div><div class="line">  <span class="comment">// 如果用户尚未绑定HumanAPI授权</span></div><div class="line">  &#125;<span class="keyword">else</span>&#123;</div><div class="line">    res.render(<span class="string">'api/humanapi'</span>, &#123;</div><div class="line">      title: <span class="string">'Human API'</span>,</div><div class="line">      publicToken: publicToken,</div><div class="line">      clientUserId: req.user._id,</div><div class="line">      clientId: secrets.humanapi.clientId,</div><div class="line">      accessToken : accessToken</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>这样一来就可以获取用户的可视化数据了。具体文档在<a href="http://hub.humanapi.co/docs/chart-api" target="_blank" rel="external">这里</a>。</p>
+<p>最后看一下用户登陆授权的全过程 - </p>
+<p>1) 用户登陆后点击<code>Connect Health Data</code>按钮</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2017.06.54.png" alt="授权按钮"></p>
+<p>2) 用户选择需要连接的第三方应用数据源</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2017.07.14.png" alt="第三方数据源"></p>
+<p>3) 用户在第三方应用处进行授权</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-09%20at%2017.07.23.png" alt="第三方应用授权"></p>
+<p>4) 从HumanAPI获取第三方应用数据及可视化图表</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202015-12-10%20at%2014.33.29.png" alt="HumanAPI图表"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Coding/" rel="tag">#Coding</a>
+          
+            <a href="/tags/Node-js/" rel="tag">#Node.js</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/08/passport-oauth/" rel="next" title="使用Passport快速搭建用户验证及第三方应用OAuth授权">
+                <i class="fa fa-chevron-left"></i> 使用Passport快速搭建用户验证及第三方应用OAuth授权
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/17/aws-iot-lambda-1/" rel="prev" title="使用AWS IoT、Lambda及ML打造智能化设备（一）">
+                使用AWS IoT、Lambda及ML打造智能化设备（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/01/08/humanapi-demo/"
+           data-title="HumanAPI介绍及Demo" data-url="http://yoursite.com/2016/01/08/humanapi-demo/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.png"
+               alt="Anthroraemon" />
+          <p class="site-author-name" itemprop="name">Anthroraemon</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分類</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">標籤</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目錄</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anthroraemon</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anthroraemon"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Coding,IoT,Machine Learning,AWS," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Anthroraemon | 人型叮当猫" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="AWS在近两年的re:Invent大会上分别公布了用于智能设备后台服务的AWS IoT以及提供无服务器代码托管的Lambda服务。这两个服务加上一些其他的AWS服务（如Machine Learning、DynamoDB及目前仍处于preview状态的QuickSight等）形成了一个完整的闭环，使得智能硬件的开发者能够很容易的就开发出基于云服务的各种硬件来。这一系列博客将会对AWS IoT和Lam">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用AWS IoT、Lambda及ML打造智能化设备（一）">
+<meta property="og:url" content="http://yoursite.com/2016/02/17/aws-iot-lambda-1/index.html">
+<meta property="og:site_name" content="Anthroraemon | 人型叮当猫">
+<meta property="og:description" content="AWS在近两年的re:Invent大会上分别公布了用于智能设备后台服务的AWS IoT以及提供无服务器代码托管的Lambda服务。这两个服务加上一些其他的AWS服务（如Machine Learning、DynamoDB及目前仍处于preview状态的QuickSight等）形成了一个完整的闭环，使得智能硬件的开发者能够很容易的就开发出基于云服务的各种硬件来。这一系列博客将会对AWS IoT和Lam">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.34.00.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.53.47.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.56.16.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2015.13.06.png">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2015.16.56.png">
+<meta property="og:updated_time" content="2016-07-17T09:09:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用AWS IoT、Lambda及ML打造智能化设备（一）">
+<meta name="twitter:description" content="AWS在近两年的re:Invent大会上分别公布了用于智能设备后台服务的AWS IoT以及提供无服务器代码托管的Lambda服务。这两个服务加上一些其他的AWS服务（如Machine Learning、DynamoDB及目前仍处于preview状态的QuickSight等）形成了一个完整的闭环，使得智能硬件的开发者能够很容易的就开发出基于云服务的各种硬件来。这一系列博客将会对AWS IoT和Lam">
+<meta name="twitter:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.34.00.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/02/17/aws-iot-lambda-1/"/>
+
+  <title> 使用AWS IoT、Lambda及ML打造智能化设备（一） | Anthroraemon | 人型叮当猫 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Anthroraemon | 人型叮当猫</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-subscribe">
+          <a href="/atom.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-subscript"></i> <br />
+            
+            訂閱
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用AWS IoT、Lambda及ML打造智能化设备（一）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2016-02-17T13:22:33+08:00" content="2016-02-17">
+              2016-02-17
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Snippet/" itemprop="url" rel="index">
+                    <span itemprop="name">Snippet</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/17/aws-iot-lambda-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/17/aws-iot-lambda-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>AWS在近两年的re:Invent大会上分别公布了用于智能设备后台服务的AWS IoT以及提供无服务器代码托管的Lambda服务。这两个服务加上一些其他的AWS服务（如Machine Learning、DynamoDB及目前仍处于preview状态的QuickSight等）形成了一个完整的闭环，使得智能硬件的开发者能够很容易的就开发出基于云服务的各种硬件来。这一系列博客将会对AWS IoT和Lambda进行一些介绍，并提供一个使用它们创建一个简易智能摄像头的例子。在系列的第一篇，让我们先来看一下AWS IoT的特性（当然你需要一个AWS除中国地区的账号才可以使用这些服务）及一个简单的Demo。</p>
+<p>AWS IoT本质上提供了基于MQTT通讯协议的消息队列实现加上连接其他AWS服务的“胶水工具”。具体文档可以在<a href="https://aws.amazon.com/cn/documentation/iot/" target="_blank" rel="external">这里</a>查看。下面先介绍一下其中最重要的几个概念——</p>
+<ul>
+<li>Thing：代表了硬件本身在AWS IoT上注册的client。用于服务器端识别客户端及通信。</li>
+<li>Shadow：代表了硬件在AWS IoT上的一个虚拟实例，也可以说是一个实体硬件的“影子”。对该影子的任何操作都可以是独立于硬件本身的，也就是说无论你的实体client是否连接到了AWS IoT，都不影响你对影子的操作。</li>
+<li>Message：智能硬件客户端向服务器端发送的消息，有一个Topic名及JSON格式的body。</li>
+<li>Rule：收到客户端发来的消息后，服务器端决定如何进行下一步操作的规则。包括了Filter和Action。</li>
+<li>Filter：对客户端消息的过滤规则，如只取JSON中的某些attributes或只处理某些topic的message等。AWS IoT提供了类SQL的查询语言。</li>
+<li>Action：处理完客户端消息后，服务器端下一步要做的事情，如将该消息作为input调用其他AWS Lambda函数。</li>
+<li>Policy：客户端-服务器端通信的安全规则。</li>
+</ul>
+<p>这其中，Shadow是AWS IoT的核心，其背后的逻辑是通过“影子”和实体的同步来进行对硬件的操控，而不是直接操作智能硬件客户端本身。举例来说，如果你有一个智能灯泡，你需要远程打开它，你并不是直接向灯泡发送指令。相反，你先将指令发送到灯泡在IoT上的“影子”，然后由影子告诉灯泡它需要打开。这样做的好处是能够保证设备无论联网与否，始终保持需要其达到的状态。如果一个设备暂时离线，在其重新上线之后会马上请求与Shadow进行同步，获取最新的指令。AWS IoT面板里有一个互动的教程帮助理解该概念（如下图，其中左下角小的灰色灯泡代表了其左侧大灯泡的Shadow）。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.34.00.png" alt="AWS IoT概念示意图"></p>
+<hr>
+<p>理解了这些基本概念，下面让我们做一个Demo，目标是将一个普通的USB摄像头变成一个能够远程操控、定时拍照并上传的智能摄像头。和任何AWS服务一样，AWS IoT也提供了相应的SDK供开发者使用，目前有node.js、Embedded C和Arduino Yun。这里我们使用Node.js的SDK。Demo在Ubuntu 14.04下测试通过。</p>
+<p>首先，我们需要在AWS IoT上创建代表该摄像头的Thing。登陆AWS控制台，进入AWS IoT面板。点击左上角的<code>Create Resource</code>按钮，然后点击<code>Create a thing</code>。在<code>Name</code>文本框里输入一个名字，就叫Camera吧，然后点击<code>Create</code>完成创建。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.53.47.png" alt=""></p>
+<p>完成以后，面板上会出现一个叫Camera的按钮，点击以后，右侧会显示相应的API Endpoint等。记下来以后会需要。然后点击左下角的<code>Create a rule</code>按钮。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2014.56.16.png" alt=""></p>
+<p>给这个rule一个名称，就叫camera_rule吧。在<code>Attribute</code>文本框里输入<code>*</code>，在<code>Topic Filter</code>文本框里输入<code>#</code>。这代表我们会对客户端发送的任何JSON消息进行处理，并且会把整条JSON数据不加删减的发送到下一步操作中去。在<code>Choose an action</code>下拉框里选择<code>Insert this message into a code function and execute it (Lambda)</code>。这代表客户端发送的消息将作为一个AWS Lambda函数的输入。如果你有任何已经存在的AWS Lambda函数，先选择它，没有的话点击<code>Create a new resource</code>并随便选一个模板创建一个。关于Lambda的具体使用我们在之后的blog里再仔细介绍。完成以后点击<code>Create</code>按钮完成创建。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2015.13.06.png" alt=""></p>
+<p>之后则需要创建相应的安全规则。同样的，在IoT主面板上点击Camera按钮，然后点击右下角的<code>Connect a device</code>。在打开的页面左侧，选择NodeJS，然后点击<code>Generate certificate and policy</code>。等操作完成后，分别点击右侧的三个连接，下载公钥私钥和证书。点击<code>Confirm &amp; start connecting</code>，AWS会提供一段JSON，先记下来。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-02-17%20at%2015.16.56.png" alt=""></p>
+<p>完成上述步骤后，我们可以开始编写相应的client了。先新建一个文件夹，<code>npm init</code>创建工程，然后安装一些需要的依赖包——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">npm install aws-iot-device-sdk //IoT客户端</div><div class="line">npm install fs</div><div class="line">npm install path</div><div class="line">npm install chokidar //文件夹监控</div><div class="line">npm install jpeg-js //处理原始图像数据</div><div class="line">npm install v4l2camera //操作USB摄像头</div></pre></td></tr></table></figure>
+<p>在工程文件夹下建立一个叫incoming的文件夹，然后新建一个<code>app.js</code>文件。引用依赖并设置一些常量——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> awsIot = <span class="built_in">require</span>(<span class="string">'aws-iot-device-sdk'</span>);</div><div class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</div><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</div><div class="line"><span class="keyword">var</span> chokidar = <span class="built_in">require</span>(<span class="string">'chokidar'</span>);</div><div class="line"><span class="keyword">var</span> jpegjs = <span class="built_in">require</span>(<span class="string">'jpeg-js'</span>);</div><div class="line"></div><div class="line"><span class="comment">// Initiate physical camera</span></div><div class="line"><span class="keyword">var</span> v4l2camera = <span class="built_in">require</span>(<span class="string">'v4l2camera'</span>);</div><div class="line"><span class="keyword">const</span> _watchFolder = <span class="string">'incoming/'</span>;</div><div class="line"><span class="keyword">const</span> _deviceNode = <span class="string">'/dev/video2'</span>;</div><div class="line"><span class="keyword">const</span> _shootInterval = <span class="number">10000</span>;</div><div class="line"><span class="keyword">const</span> _heartbeatInterval = <span class="number">10000</span>;</div></pre></td></tr></table></figure>
+<p>其中<code>_deviceNode</code>是你的USB摄像头连接Linux以后相应的挂载地址，<code>_shootInterval</code>是要求摄像头每隔多少时间拍摄一张照片，<code>_heartbeatInterval</code>是要求摄像头每多少时间向服务器端发送一条心跳信息确定在线状态。</p>
+<p>然后用<code>v4lcamera</code>这个包初始化摄像头——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> cam = <span class="keyword">new</span> v4l2camera.Camera(_deviceNode);</div><div class="line"><span class="keyword">if</span> (cam.configGet().formatName !== <span class="string">'YUYV'</span>) &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'YUYV camera required'</span>);</div><div class="line">    process.exit(<span class="number">1</span>);</div><div class="line">&#125;</div><div class="line">cam.configSet(&#123;width: <span class="number">352</span>, height: <span class="number">288</span>&#125;);</div></pre></td></tr></table></figure>
+<p>连接AWS IoT，这段config代码就是上面生成的配置代码。你需要指向正确的证书及私钥保存地址。还需要自己提供一个根证书文件——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// Create a device (shadow) and connect to AWS IoT</div><div class="line">var deviceShadow = awsIot.thingShadow(&#123;</div><div class="line">    &apos;host&apos;: &apos;xxxxxxxx.iot.eu-west-1.amazonaws.com&apos;,</div><div class="line">    &apos;port&apos;: 8883,</div><div class="line">    &apos;clientId&apos;: &apos;camera&apos;,</div><div class="line">    &apos;caCert&apos;: &apos;root-CA.crt&apos;,</div><div class="line">    &apos;clientCert&apos;: &apos;iot-certificate.pem.crt&apos;,</div><div class="line">    &apos;privateKey&apos;: &apos;iot-private.pem.key&apos;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>之后处理设备连接到AWS IoT后不同事件的相应。首先是最关键的连通时。这里一共做了四件事情——1）向AWS IoT注册该客户端；2）等待两秒钟，用于获取其影子的状态；3）要求客户端每隔一段时间向服务器发送一条Topic为<code>Heartbeat</code>的消息告知其连接状态；4）初始化<code>chokidar</code>包监视<code>incoming</code>文件夹中的新文件，每当有新文件（照片）产生时，将其转为base64序列并以<code>Photo</code>为topic作为消息发送到服务器。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Initialize the status to be for the device and its shadow</span></div><div class="line"><span class="comment">//var cameraState = &#123;"state": &#123;"desired": &#123;"power": 0&#125;&#125;&#125;;</span></div><div class="line"><span class="keyword">var</span> isCamOn = <span class="number">0</span>;</div><div class="line"></div><div class="line">deviceShadow.on(<span class="string">'connect'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'Device connected to AWS IoT'</span>);</div><div class="line"></div><div class="line">    <span class="comment">// When the dvice is connected with its shadow on AWS IoT, register the status first</span></div><div class="line">    deviceShadow.register(<span class="string">'camera'</span>);</div><div class="line"></div><div class="line"></div><div class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        deviceShadow.get(<span class="string">'camera'</span>);</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'Device shadow status retrieved'</span>);</div><div class="line">    &#125;, <span class="number">2000</span>);</div><div class="line"></div><div class="line">    <span class="comment">// Start watching the folder for incoming pictures</span></div><div class="line">    <span class="keyword">var</span> watcher = chokidar.watch(_watchFolder, &#123;</div><div class="line">        ignored: <span class="regexp">/[\/\\]\./</span>,</div><div class="line">        ignoreInitial: <span class="literal">true</span>,</div><div class="line">        persistent: <span class="literal">true</span>,</div><div class="line">        awaitWriteFinish: <span class="literal">true</span></div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    <span class="comment">// When new photo comes in</span></div><div class="line">    watcher.on(<span class="string">'add'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">filepath</span>)</span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'File: '</span> + filepath + <span class="string">' added'</span>);</div><div class="line"></div><div class="line">        <span class="keyword">var</span> imageFile = fs.readFileSync(filepath);</div><div class="line">        <span class="keyword">var</span> imageBase64 = <span class="keyword">new</span> Buffer(imageFile).toString(<span class="string">'base64'</span>);</div><div class="line"></div><div class="line">      <span class="comment">// Send the image as base64 string as an event from the device to AWS IoT</span></div><div class="line">      <span class="comment">// A rule of this device is setup on AWS IoT to trigger a AWS Lambda function to decode image and store in S3</span></div><div class="line">        deviceShadow.publish(<span class="string">'photo'</span>, <span class="built_in">JSON</span>.stringify(&#123;</div><div class="line">      <span class="comment">// send extra information here, e.g. timestamp. product line id, etc.</span></div><div class="line">            id: path.basename(filepath),</div><div class="line">            image: imageBase64</div><div class="line">        &#125;));</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    <span class="comment">// Send heartbeat for connectivity checking</span></div><div class="line">    setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">        deviceShadow.publish(<span class="string">'Heartbeat'</span>, <span class="built_in">JSON</span>.stringify(&#123;</div><div class="line">            name: <span class="string">'camera'</span>,</div><div class="line">            connected: <span class="number">1</span></div><div class="line">        &#125;));</div><div class="line">    &#125;, _heartbeatInterval);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>在上面的步骤2中，我们得到了摄像头的影子的状态，也就是期望的状态。现在我们需要将其和实体摄像头的状态进行同步。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deviceShadow.on(<span class="string">'status'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">thingName, stat, clientToken, stateObject</span>)</span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'received '</span> + stat + <span class="string">' on '</span> + thingName + <span class="string">': '</span> + <span class="built_in">JSON</span>.stringify(stateObject));</div><div class="line">    isCamOn = stateObject.state.desired.power;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>此外，当Shadow被远程操控改变状态时，我们希望如果摄像头在线，它能够实时相应，而不是在下次重新上线时才更新状态。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// When the desired status is changed on shadow from another source (e.g. control pannel), change the local device status</span></div><div class="line">deviceShadow.on(<span class="string">'delta'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">thingName, stateObject</span>)</span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'Delta: '</span> + stateObject.state.power);</div><div class="line">    isCamOn = stateObject.state.power;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>以上我们就完成了客户端和AWS IoT服务器端的通讯及控制。下面我们只需要根据需要的状态控制是否拍照即可。因为如何实现照相机的控制不是本文的重点，下面仅提供参考代码。具体需要一些配置可以参考v4l2camera的<a href="https://github.com/bellbind/node-v4l2camera" target="_blank" rel="external">文档</a>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Use camera to take picture</span></div><div class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">    takePhoto(cam, isCamOn);</div><div class="line">&#125;, _shootInterval);</div><div class="line"></div><div class="line"><span class="comment">// ------------------------ Functions -----------------------------</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">takePhoto</span>(<span class="params">cam, isCamOn</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span>(isCamOn)&#123;</div><div class="line">        cam.start();</div><div class="line">        times(<span class="number">6</span>, cam.capture.bind(cam), <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;</div><div class="line">            <span class="keyword">var</span> fileName = <span class="built_in">Date</span>.now() + <span class="string">'.jpg'</span>;</div><div class="line">            saveAsJpg(cam.toRGB(), cam.width, cam.height, _watchFolder + fileName);</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">'Image '</span> + fileName + <span class="string">' took'</span>);</div><div class="line">            cam.stop();</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">times</span>(<span class="params">n, async, cont</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">async</span>(<span class="function"><span class="keyword">function</span> <span class="title">rec</span>(<span class="params">r</span>) </span>&#123;<span class="keyword">return</span> --n == <span class="number">0</span> ? cont(r) : <span class="keyword">async</span>(rec);&#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">saveAsJpg</span>(<span class="params">rgb, width, height, filename</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> size = width * height;</div><div class="line">    <span class="keyword">var</span> rgba = &#123;data: <span class="keyword">new</span> Buffer(size * <span class="number">4</span>), width: width, height: height&#125;;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</div><div class="line">        rgba.data[i * <span class="number">4</span> + <span class="number">0</span>] = rgb[i * <span class="number">3</span> + <span class="number">0</span>];</div><div class="line">        rgba.data[i * <span class="number">4</span> + <span class="number">1</span>] = rgb[i * <span class="number">3</span> + <span class="number">1</span>];</div><div class="line">        rgba.data[i * <span class="number">4</span> + <span class="number">2</span>] = rgb[i * <span class="number">3</span> + <span class="number">2</span>];</div><div class="line">        rgba.data[i * <span class="number">4</span> + <span class="number">3</span>] = <span class="number">255</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">var</span> jpeg = jpegjs.encode(rgba, <span class="number">100</span>);</div><div class="line">    fs.createWriteStream(filename).end(Buffer(jpeg.data));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样一来，我们就实现了一个简单的智能照相机。运行后他能够每隔一段时间拍摄照片并上传到AWS IoT，并被传输到Lambda中进行进一步的处理或分析。关于如何利用Shadow远程开关摄像头或用Lambda函数处理照片将在之后的blog里再作介绍。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Coding/" rel="tag">#Coding</a>
+          
+            <a href="/tags/IoT/" rel="tag">#IoT</a>
+          
+            <a href="/tags/Machine-Learning/" rel="tag">#Machine Learning</a>
+          
+            <a href="/tags/AWS/" rel="tag">#AWS</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/08/humanapi-demo/" rel="next" title="HumanAPI介绍及Demo">
+                <i class="fa fa-chevron-left"></i> HumanAPI介绍及Demo
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/16/aws-iot-lambda-2/" rel="prev" title="使用AWS IoT、Lambda及ML打造智能化设备（二）">
+                使用AWS IoT、Lambda及ML打造智能化设备（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/02/17/aws-iot-lambda-1/"
+           data-title="使用AWS IoT、Lambda及ML打造智能化设备（一）" data-url="http://yoursite.com/2016/02/17/aws-iot-lambda-1/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.png"
+               alt="Anthroraemon" />
+          <p class="site-author-name" itemprop="name">Anthroraemon</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分類</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">標籤</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目錄</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anthroraemon</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anthroraemon"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
