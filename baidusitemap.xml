@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    
+    
+  <url>
+    <loc>http://yoursite.com/2016/03/16/aws-iot-lambda-2/</loc>
+    <lastmod>2016-07-17T09:09:55.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用AWS IoT、Lambda及ML打造智能化设备（二）</title>
+        <pubTime>2016-03-16T06:33:15.000Z</pubTime>
+        
+        <tag>IoT</tag>
+         
+        <tag>Machine Learning</tag>
+         
+        <tag>AWS</tag>
+         
+        <tag>Coding</tag>
+         
+         
+           
+             
+              <breadCrumb title="Snippet" url="http://yoursite.com/categories/Snippet/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://yoursite.com/2016/02/17/aws-iot-lambda-1/</loc>
+    <lastmod>2016-07-17T09:09:37.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用AWS IoT、Lambda及ML打造智能化设备（一）</title>
+        <pubTime>2016-02-17T05:22:33.000Z</pubTime>
+        
+        <tag>IoT</tag>
+         
+        <tag>Machine Learning</tag>
+         
+        <tag>AWS</tag>
+         
+        <tag>Coding</tag>
+         
+         
+           
+             
+              <breadCrumb title="Snippet" url="http://yoursite.com/categories/Snippet/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://yoursite.com/2015/11/06/hackathon-thoughts/</loc>
+    <lastmod>2016-07-17T09:08:36.000Z</lastmod>
+    <data>
+        <display>
+        <title>关于Hackathon的一些Learnings</title>
+        <pubTime>2015-11-06T07:15:33.000Z</pubTime>
+        
+        <tag>Hackathon</tag>
+         
+        <tag>Agile</tag>
+         
+         
+           
+             
+              <breadCrumb title="人月神话" url="http://yoursite.com/categories/%E4%BA%BA%E6%9C%88%E7%A5%9E%E8%AF%9D/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://yoursite.com/2016/01/08/humanapi-demo/</loc>
+    <lastmod>2016-03-18T06:24:59.000Z</lastmod>
+    <data>
+        <display>
+        <title>HumanAPI介绍及Demo</title>
+        <pubTime>2016-01-08T06:36:57.000Z</pubTime>
+        
+        <tag>Coding</tag>
+         
+        <tag>Node.js</tag>
+         
+         
+           
+             
+              <breadCrumb title="Snippet" url="http://yoursite.com/categories/Snippet/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://yoursite.com/2015/12/08/passport-oauth/</loc>
+    <lastmod>2016-03-18T06:24:59.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用Passport快速搭建用户验证及第三方应用OAuth授权</title>
+        <pubTime>2015-12-08T09:02:33.000Z</pubTime>
+        
+        <tag>Coding</tag>
+         
+        <tag>Node.js</tag>
+         
+         
+           
+             
+              <breadCrumb title="Snippet" url="http://yoursite.com/categories/Snippet/"/>
+          
+        </display>
+    </data>
+    </url>
+
+</urlset>
