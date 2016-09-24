@@ -3,6 +3,32 @@
 
 
     
+  <url>
+    <loc>http://yoursite.com/2016/09/24/aws-iot-lambda-3/</loc>
+    <lastmod>2016-09-24T04:09:44.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用AWS IoT、Lambda及ML打造智能化设备（三）</title>
+        <pubTime>2016-09-24T04:09:15.000Z</pubTime>
+        
+        <tag>IoT</tag>
+         
+        <tag>Machine Learning</tag>
+         
+        <tag>AWS</tag>
+         
+        <tag>Coding</tag>
+         
+         
+           
+             
+              <breadCrumb title="Snippet" url="http://yoursite.com/categories/Snippet/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
     
   <url>
     <loc>http://yoursite.com/2016/03/16/aws-iot-lambda-2/</loc>

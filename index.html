@@ -271,6 +271,161 @@
             
               
                 
+                <a class="post-title-link" href="/2016/09/24/aws-iot-lambda-3/" itemprop="url">
+                  使用AWS IoT、Lambda及ML打造智能化设备（三）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2016-09-24T12:09:15+08:00" content="2016-09-24">
+              2016-09-24
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Snippet/" itemprop="url" rel="index">
+                    <span itemprop="name">Snippet</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/24/aws-iot-lambda-3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/24/aws-iot-lambda-3/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在本系列的上两篇文章中，我们介绍了如何利用 AWS IoT 打造一个可以远程操作的智能照相机并且将拍摄的照片数据通过 IoT 消息队列进入 AWS Lambda 进行处理的过程。在这篇文章中，我将着重介绍当数据进入 Lambda 后是如何被处理的。</p>
+<p>先简单介绍一下 AWS 的 Lambda 服务 —— Lambda 作为一种无后台服务（server-less service）的实现被 AWS 于 2014年提出以后，在近两年的时间里得到了迅猛的发展。通过 Lambda，我们可以将一个计算/服务对应的函数（function）上传到 AWS 上进行调用，而无需管理该该函数运行的环境。简单来说，用户只需要实现计算的实现，而不用再关注架构、资源等，而计价则以函数的执行次数和实际消耗资源为准。目前，Lambda 支持运行多种语言的函数，包括 Node.js, Python 或 Java 等。其中，需要注意的是，每个任务的运行时间不能超过5分钟。</p>
+<p>在系列<a href="http://xraywu.github.io/2016/02/17/aws-iot-lambda-1/" target="_blank" rel="external">第一篇</a>文章中，我们已经提到需要创建一个 Lambda 资源，现在就让我们看看到底要怎么做。从控制台进入 Lambda 后，点击 <code>Create a Lambda Function</code>（或者和本系列第一篇一样，直接从 Iot 创建界面中进入），此时会进入模板选择页面。这里 AWS 为我们提供了许多常见函数的模板，比如从 S3 读取 Object 的操作等，先点击 <code>Skip</code> 跳过。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2010.00.00%20AM.png" alt="新建 Lambda 函数"></p>
+<p>跳过模板选择后，我们会进入触发器（Trigger）的选择页面。每个 Lambda 函数都需要通过事件（Event）去触发。比较常见的场景有有——1）Kinesis 流式数据依次触发 Lambda 被处理；2）S3 有新 Object 时触发处理；3）通过 API Gateway 直接变成一项可以被 Restful 调用的服务；4）Dynamodb 有新数据入库时触发；5）通过 Cloudwatch 设置定时触发；以及6）我们今天要介绍的通过 Iot 消息队列获取消息数据触发。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2011.36.17%20AM.png" alt="选择 IoT 作为触发器"></p>
+<p>在选择触发器的下拉框内，选择 AWS IoT 作为事件触发源，选择在文章第一篇中已经设置好的 IoT Rule （以及如果需要对进入 Lambda 的消息进行过滤，填写 SQL Statement 筛选数据），进入下一步。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2010.07.13%20AM.png" alt="新建 Lambda 界面"></p>
+<p>这里，我们进入了函数的具体配置页面。首先，我们需要填写函数的名字以及选择函数对应的语言。在 <code>Runtime</code> 下拉框中选择 <code>NodeJS</code>。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2010.09.33%20AM.png" alt="语言选择"></p>
+<p>之后，我们需要将函数的实现代码上传——这里可以选择直接在下方文本框中输入代码，或者当有依赖及代码结构较为复杂时将整个项目打包上传。下面的代码中，因为我会依赖一些第三方包，所以需要将项目整体上传。这里，和其他 node.js 项目一样需要先建立一个 <code>package.json</code> 文件管理依赖：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"name"</span>: <span class="string">"image-feature-extraction"</span>,</div><div class="line">  <span class="attr">"version"</span>: <span class="string">"1.0.0"</span>,</div><div class="line">  <span class="attr">"description"</span>: <span class="string">"Using indico.io API for image feature extraction"</span>,</div><div class="line">  <span class="attr">"main"</span>: <span class="string">"index.js"</span>,</div><div class="line">  <span class="attr">"scripts"</span>: &#123;</div><div class="line">    <span class="attr">"test"</span>: <span class="string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="attr">"author"</span>: <span class="string">"Anthroraemon"</span>,</div><div class="line">  <span class="attr">"license"</span>: <span class="string">"ISC"</span>,</div><div class="line">  <span class="attr">"dependencies"</span>: &#123;</div><div class="line">    <span class="attr">"async"</span>: <span class="string">"^1.5.2"</span>,</div><div class="line">    <span class="attr">"request"</span>: <span class="string">"^2.69.0"</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后，我们就可以开始写函数的主体了——</p>
+<p><code>index.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> request = <span class="built_in">require</span>(<span class="string">'request'</span>);</div><div class="line"><span class="keyword">var</span> <span class="keyword">async</span> = <span class="built_in">require</span>(<span class="string">'async'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> indicoAPIKey = <span class="string">'my_indico_key'</span>;</div><div class="line"><span class="keyword">var</span> indicoEndpoint = <span class="string">'http://apiv2.indico.io/imagefeatures?key='</span> + indicoAPIKey;</div><div class="line"></div><div class="line">exports.handler = <span class="function"><span class="keyword">function</span>(<span class="params">event, context</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> imageBase64str = event.image;</div><div class="line">  <span class="keyword">var</span> deviceName = event.deviceName;</div><div class="line">  <span class="keyword">var</span> postDate = event.id;</div><div class="line">  <span class="keyword">async</span>.waterfall([</div><div class="line">    <span class="comment">// Extract image feature from indico.io</span></div><div class="line">    <span class="function"><span class="keyword">function</span>(<span class="params">callback</span>)</span>&#123;</div><div class="line">      <span class="keyword">var</span> options = &#123;</div><div class="line">        uri: indicoEndpoint,</div><div class="line">        method: <span class="string">'POST'</span>,</div><div class="line">        json: &#123;</div><div class="line">          <span class="string">'data'</span>: imageBase64str</div><div class="line">        &#125;</div><div class="line">      &#125;;</div><div class="line">      request(options, <span class="function"><span class="keyword">function</span>(<span class="params">error, response, body</span>)</span>&#123;</div><div class="line">        <span class="keyword">if</span>(error)&#123;</div><div class="line">          <span class="keyword">return</span> callback(error.message);</div><div class="line">        &#125;</div><div class="line">        callback(<span class="literal">null</span>, body.results);</div><div class="line">      &#125;);</div><div class="line">    &#125;</div><div class="line">  ], <span class="function"><span class="keyword">function</span>(<span class="params">error, result</span>)</span>&#123;</div><div class="line">    <span class="keyword">if</span>(error)&#123;</div><div class="line">      <span class="built_in">console</span>.log(error);</div><div class="line">      context.fail(error);</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">      <span class="built_in">console</span>.log(result);</div><div class="line">      context.succeed(result);</div><div class="line">    &#125;</div><div class="line">  &#125;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>这里我们主要做了两件事情——1）从 IoT 输入的消息中获取到设备的编号以及设备拍摄的照片的base64字符串；2）将图片送到 <a href="https://indico.io/" target="_blank" rel="external">Indico</a> 的 API 中抽取图像的特征向量，以供未来分析及机器学习使用。Indico 提供了非常强大的各种关于文本和图像的机器学习工具，大家有兴趣可以看一下，但不是本文介绍的主题，就不多做展开了。</p>
+<p>回到上面编写的 Lambda 主体代码中——每份代码中都需要一个 main function 作为执行的主体，这里，我们以 <code>handler</code> 函数作为主函数，并且用 <code>exports</code> 暴露。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">exports.handler = function(event, context) &#123;</div><div class="line">	// Function to be executed</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>要注意的是，任何 Lambda 的 main fucntion 都需要两个输入参数，<code>event</code>和<code>context</code>。<code>event</code>变量储存所有事件触发后的 Input 数据，如上面我们用到的设备号和图形数据。无论你的触发器是 IoT 或是其他，输入变量永远在<code>event</code>变量中获取。<code>context</code>则是函数执行的环境，当函数计算完成后，需要通过<code>context.succeed(result)</code>或<code>context.fail(error)</code>方法返回计算结果，以供 AWS CloudWatch 准确得到返回状态等。其余的部分则按正常的代码编写逻辑即可。</p>
+<p>完成了上面两个文件，我们就可以将项目打包上传了。首先建立项目结构——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; mkdir mylambdafunction</div><div class="line">&gt; cp package.json ./mylambdafunction</div><div class="line">&gt; cp index.js ./mylambdafunction</div><div class="line">&gt; cd mylambdafunction</div><div class="line">&gt; npm install</div></pre></td></tr></table></figure>
+<p>然后，将<code>mylambdafunction</code>文件夹<strong>里面</strong>的内容打包成 zip 文件（即不要包括<code>mylambdafunction/</code>结构）。回到 AWS 的代码上传界面，在<code>Code entry type</code>中选择<code>Upload a .ZIP file</code>，并选择刚刚打包的 zip 文件。在 <code>Handler</code> 中，填写 <code>index.handler</code>，即告诉 AWS 要执行的 main function 是 <code>index.js</code> 文件中的 <code>handler</code> 函数。选择一个执行该函数的用户角色（即如果要访问 AWS 上的其他资源的话，需要执行 Lambda 函数的用户有这些资源的权限），最后则填写分配这个函数执行时可以使用的资源，以及函数的最长执行时间（如果超时，函数运行将被自动终止），函数的运行时间上限是<code>5</code>分钟。</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2011.19.24%20AM.png" alt="配置函数"></p>
+<p>完成这些配置以后，一个 Lambda 函数就建好了。回到控制台，选择刚刚新建的函数，我们可以在 <code>Actions</code> 下拉框中配置一个测试事件，来测试代码是否已经成功部署，也可以在 <code>Configure</code> Tab 页上更新上面配置的函数资源、或者在 <code>Trigger</code> 页面里更新其他的触发器和事件。一切就绪以后，打开你的摄像头和控制台，运行看看是否有照片被拍摄、上传和分析吧！</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2011.48.28%20AM.png" alt="配置测试数据"></p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2011.47.03%20AM.png" alt="修改函数信息"></p>
+<hr>
+<h3 id="番外篇"><a href="#番外篇" class="headerlink" title="番外篇"></a>番外篇</h3><p>以上就是本系列的最后一篇文章了。总结一下，在这个系列里面，我们利用到了 AWS 的服务将一个普通的摄像头变成了一个智能摄像头，同时学习了包括 Lambda 在内的一些 AWS 新服务的使用。</p>
+<p>在系列第二到第三篇这半年当中，可以说无后台微服务的思想和使用都得到了大力的传播，我本人对 Lambda 的认识也在逐步加深。下面就简单讲一些使用中的tips——</p>
+<ol>
+<li>Lambda 在运行 Python 代码时，因为大量 Python 第三方包都依赖预编译的 C Lib，而本身 Lambda 运行环境下是没有的，因此打包时需要将这些 lib 先编译好再一起上传。这些 lib 必须在 AWS EC2 的官方镜像下编译，一些常用的预编译好的包可以在<a href="https://github.com/Miserlou/lambda-packages" target="_blank" rel="external">这个GitHub</a>代码库中找到直接使用，也可以学习里面的构造脚本自己打包一些其他 lib。</li>
+<li>无后台服务的触角甚至于已经延伸到了一般的微服务-API 架构之外。比如<a href="https://github.com/Miserlou/Zappa" target="_blank" rel="external">这个项目</a>将一个完整的Web App部署在了AWS 上（静态资源在 S3 上，任何后端逻辑全部在 Lambda 上）。也就是说，这个网站在没有人访问的时候是不存在的！只有有人访问时，才会触发 Lambda 函数进行后端路由等。</li>
+<li>一些常见使用 Lambda 的 Use Case 包括——1）大量传感器生成的数据的解析、归档和存储 （IoT）；2）大量日志文件的处理和归档 （Kinesis）；3）在 NoSQL 数据库上实现 类似 SQL 数据库的 Trigger 功能。</li>
+<li>Lambda 函数可以进行级联，即数据进入一个 Lambda 函数进行预处理，再调用多个不同 Lambda 函数进行后处理。</li>
+<li>在今年的 AWS 中国峰会上，反复被提到的概念是 Infrastructure 的进化——经历了 <code>物理机 -&gt; 虚拟机 -&gt; 云服务器 -&gt; 容器 -&gt; 函数</code>的进化过程。可以看到，在计算资源愈加丰富的情况下，我们可以越来越专注核心功能的实现，而不是运维。Hail AWS！</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/03/16/aws-iot-lambda-2/" itemprop="url">
                   使用AWS IoT、Lambda及ML打造智能化设备（二）
                 </a>
@@ -1038,7 +1193,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
