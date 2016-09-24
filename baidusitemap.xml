@@ -5,7 +5,7 @@
     
   <url>
     <loc>http://yoursite.com/2016/09/24/aws-iot-lambda-3/</loc>
-    <lastmod>2016-09-24T04:14:59.000Z</lastmod>
+    <lastmod>2016-09-24T04:19:48.000Z</lastmod>
     <data>
         <display>
         <title>使用AWS IoT、Lambda及ML打造智能化设备（三）</title>
@@ -105,12 +105,12 @@
 
     
   <url>
-    <loc>http://yoursite.com/2015/12/08/passport-oauth/</loc>
+    <loc>http://yoursite.com/2016/01/08/humanapi-demo/</loc>
     <lastmod>2016-03-18T06:24:59.000Z</lastmod>
     <data>
         <display>
-        <title>使用Passport快速搭建用户验证及第三方应用OAuth授权</title>
-        <pubTime>2015-12-08T09:02:33.000Z</pubTime>
+        <title>HumanAPI介绍及Demo</title>
+        <pubTime>2016-01-08T06:36:57.000Z</pubTime>
         
         <tag>Coding</tag>
          
@@ -127,12 +127,12 @@
 
     
   <url>
-    <loc>http://yoursite.com/2016/01/08/humanapi-demo/</loc>
+    <loc>http://yoursite.com/2015/12/08/passport-oauth/</loc>
     <lastmod>2016-03-18T06:24:59.000Z</lastmod>
     <data>
         <display>
-        <title>HumanAPI介绍及Demo</title>
-        <pubTime>2016-01-08T06:36:57.000Z</pubTime>
+        <title>使用Passport快速搭建用户验证及第三方应用OAuth授权</title>
+        <pubTime>2015-12-08T09:02:33.000Z</pubTime>
         
         <tag>Coding</tag>
          
