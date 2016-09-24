@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-09-24T04:13:45.000Z</updated>
+  <updated>2016-09-24T04:14:59.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2016/09/24/aws-iot-lambda-3/"/>
     <id>http://yoursite.com/2016/09/24/aws-iot-lambda-3/</id>
     <published>2016-09-24T04:09:15.000Z</published>
-    <updated>2016-09-24T04:13:45.000Z</updated>
+    <updated>2016-09-24T04:14:59.000Z</updated>
     
     <content type="html">&lt;p&gt;在本系列的上两篇文章中，我们介绍了如何利用 AWS IoT 打造一个可以远程操作的智能照相机并且将拍摄的照片数据通过 IoT 消息队列进入 AWS Lambda 进行处理的过程。在这篇文章中，我将着重介绍当数据进入 Lambda 后是如何被处理的。&lt;/p&gt;
 &lt;p&gt;先简单介绍一下 AWS 的 Lambda 服务 —— Lambda 作为一种无后台服务（server-less service）的实现被 AWS 于 2014年提出以后，在近两年的时间里得到了迅猛的发展。通过 Lambda，我们可以将一个计算/服务对应的函数（function）上传到 AWS 上进行调用，而无需管理该该函数运行的环境。简单来说，用户只需要实现计算的实现，而不用再关注架构、资源等，而计价则以函数的执行次数和实际消耗资源为准。目前，Lambda 支持运行多种语言的函数，包括 Node.js, Python 或 Java 等。其中，需要注意的是，每个任务的运行时间不能超过5分钟。&lt;/p&gt;
@@ -43,7 +43,7 @@
 &lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;exports.handler = function(event, context) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	// Function to be executed&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;要注意的是，任何 Lambda 的 main fucntion 都需要两个输入参数，&lt;code&gt;event&lt;/code&gt;和&lt;code&gt;context&lt;/code&gt;。&lt;code&gt;event&lt;/code&gt;变量储存所有事件触发后的 Input 数据，如上面我们用到的设备号和图形数据。无论你的触发器是 IoT 或是其他，输入变量永远在&lt;code&gt;event&lt;/code&gt;变量中获取。&lt;code&gt;context&lt;/code&gt;则是函数执行的环境，当函数计算完成后，需要通过&lt;code&gt;context.succeed(result)&lt;/code&gt;或&lt;code&gt;context.fail(error)&lt;/code&gt;方法返回计算结果，以供 AWS CloudWatch 准确得到返回状态等。其余的部分则按正常的代码编写逻辑即可。&lt;/p&gt;
 &lt;p&gt;完成了上面两个文件，我们就可以将项目打包上传了。首先建立项目结构——&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt; mkdir mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt; cp package.json ./mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt; cp index.js ./mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt; cd mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt; npm install&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;mkdir mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;cp package.json ./mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;cp index.js ./mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;cd mylambdafunction&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;npm install&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;然后，将&lt;code&gt;mylambdafunction&lt;/code&gt;文件夹&lt;strong&gt;里面&lt;/strong&gt;的内容打包成 zip 文件（即不要包括&lt;code&gt;mylambdafunction/&lt;/code&gt;结构）。回到 AWS 的代码上传界面，在&lt;code&gt;Code entry type&lt;/code&gt;中选择&lt;code&gt;Upload a .ZIP file&lt;/code&gt;，并选择刚刚打包的 zip 文件。在 &lt;code&gt;Handler&lt;/code&gt; 中，填写 &lt;code&gt;index.handler&lt;/code&gt;，即告诉 AWS 要执行的 main function 是 &lt;code&gt;index.js&lt;/code&gt; 文件中的 &lt;code&gt;handler&lt;/code&gt; 函数。选择一个执行该函数的用户角色（即如果要访问 AWS 上的其他资源的话，需要执行 Lambda 函数的用户有这些资源的权限），最后则填写分配这个函数执行时可以使用的资源，以及函数的最长执行时间（如果超时，函数运行将被自动终止），函数的运行时间上限是&lt;code&gt;5&lt;/code&gt;分钟。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202016-09-24%20at%2011.19.24%20AM.png&quot; alt=&quot;配置函数&quot;&gt;&lt;/p&gt;
 &lt;p&gt;完成这些配置以后，一个 Lambda 函数就建好了。回到控制台，选择刚刚新建的函数，我们可以在 &lt;code&gt;Actions&lt;/code&gt; 下拉框中配置一个测试事件，来测试代码是否已经成功部署，也可以在 &lt;code&gt;Configure&lt;/code&gt; Tab 页上更新上面配置的函数资源、或者在 &lt;code&gt;Trigger&lt;/code&gt; 页面里更新其他的触发器和事件。一切就绪以后，打开你的摄像头和控制台，运行看看是否有照片被拍摄、上传和分析吧！&lt;/p&gt;
