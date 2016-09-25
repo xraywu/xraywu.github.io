@@ -91,7 +91,7 @@
 <meta name="description" content="在上一篇博文中，我们介绍了AWS IoT的基本概念，并使用其SDK搭建了一个简易的USB智能摄像头，使之能够每隔一段时间就拍摄照片并上传到云端作进一步的分析。然而，仅仅使用本地SDK，我们还不能实现对其远端控制。在这篇文章中，我们将着重理解一下AWS IoT中“Device Shadow”的概念，并搭建一个远端控制摄像头开关的Web App。这里将使用MEAN Stack进行开发。Device的列">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用AWS IoT、Lambda及ML打造智能化设备（二）">
-<meta property="og:url" content="http://yoursite.com/2016/03/16/aws-iot-lambda-2/index.html">
+<meta property="og:url" content="http://xraywu.github.io/2016/03/16/aws-iot-lambda-2/index.html">
 <meta property="og:site_name" content="Anthroraemon  |  人型叮當貓">
 <meta property="og:description" content="在上一篇博文中，我们介绍了AWS IoT的基本概念，并使用其SDK搭建了一个简易的USB智能摄像头，使之能够每隔一段时间就拍摄照片并上传到云端作进一步的分析。然而，仅仅使用本地SDK，我们还不能实现对其远端控制。在这篇文章中，我们将着重理解一下AWS IoT中“Device Shadow”的概念，并搭建一个远端控制摄像头开关的Web App。这里将使用MEAN Stack进行开发。Device的列">
 <meta property="og:updated_time" content="2016-07-17T09:09:55.000Z">
@@ -129,7 +129,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/03/16/aws-iot-lambda-2/"/>
+  <link rel="canonical" href="http://xraywu.github.io/2016/03/16/aws-iot-lambda-2/"/>
 
 
   <title> 使用AWS IoT、Lambda及ML打造智能化设备（二） | Anthroraemon  |  人型叮當貓 </title>
@@ -338,7 +338,7 @@
       
 
       
-        <p>在<a href="http://xraywu.github.io/2016/02/17/aws-iot-lambda-1/" target="_blank" rel="external">上一篇</a>博文中，我们介绍了AWS IoT的基本概念，并使用其SDK搭建了一个简易的USB智能摄像头，使之能够每隔一段时间就拍摄照片并上传到云端作进一步的分析。然而，仅仅使用本地SDK，我们还不能实现对其远端控制。在这篇文章中，我们将着重理解一下AWS IoT中“Device Shadow”的概念，并搭建一个远端控制摄像头开关的Web App。这里将使用MEAN Stack进行开发。Device的列表ID会储存在本地的MongoDB中，而对远端摄像头的控制则通过Node.js后端调用AWS相应的API来实现。</p>
+        <p>在<a href="http://xraywu.github.io/2016/02/17/aws-iot-lambda-1/">上一篇</a>博文中，我们介绍了AWS IoT的基本概念，并使用其SDK搭建了一个简易的USB智能摄像头，使之能够每隔一段时间就拍摄照片并上传到云端作进一步的分析。然而，仅仅使用本地SDK，我们还不能实现对其远端控制。在这篇文章中，我们将着重理解一下AWS IoT中“Device Shadow”的概念，并搭建一个远端控制摄像头开关的Web App。这里将使用MEAN Stack进行开发。Device的列表ID会储存在本地的MongoDB中，而对远端摄像头的控制则通过Node.js后端调用AWS相应的API来实现。</p>
 <p>首先，我们需要在Node.js环境下初始化一个Express应用，并添加相应的依赖，这里就不多做介绍了，可以使用之前介绍过的<a href="https://github.com/jxm262/hackathon-starter-ejs" target="_blank" rel="external">框架</a>搭建。同时也需要在MongoDB中新建一个数据库供本地存储使用。然后就可以新建相应的路由和Controller了。</p>
 <p>首先创建<code>controllers/device.js</code>文件。先引入一些依赖和配置文件——</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> aws4 = <span class="built_in">require</span>(<span class="string">'aws4'</span>);</div><div class="line"><span class="keyword">var</span> <span class="keyword">async</span> = <span class="built_in">require</span>(<span class="string">'async'</span>);</div><div class="line"><span class="keyword">var</span> https = <span class="built_in">require</span>(<span class="string">'https'</span>);</div><div class="line"><span class="keyword">var</span> moment = <span class="built_in">require</span>(<span class="string">'moment'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> secrets = <span class="built_in">require</span>(<span class="string">'../config/secrets'</span>);</div><div class="line"><span class="keyword">var</span> deviceConf = <span class="built_in">require</span>(<span class="string">'../config/device'</span>);</div><div class="line"><span class="keyword">var</span> Device = <span class="built_in">require</span>(<span class="string">'../models/Device'</span>);</div></pre></td></tr></table></figure>
@@ -447,7 +447,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/03/16/aws-iot-lambda-2/"
-           data-title="使用AWS IoT、Lambda及ML打造智能化设备（二）" data-url="http://yoursite.com/2016/03/16/aws-iot-lambda-2/">
+           data-title="使用AWS IoT、Lambda及ML打造智能化设备（二）" data-url="http://xraywu.github.io/2016/03/16/aws-iot-lambda-2/">
       </div>
     
   </div>
