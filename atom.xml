@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xraywu.github.io/"/>
-  <updated>2016-09-24T04:19:48.000Z</updated>
+  <updated>2016-10-23T11:32:11.000Z</updated>
   <id>http://xraywu.github.io/</id>
   
   <author>
@@ -14,6 +14,45 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>在 TEDx 宁波演讲后的一些体会</title>
+    <link href="http://xraywu.github.io/2016/10/23/tedx-ningbo-reflection/"/>
+    <id>http://xraywu.github.io/2016/10/23/tedx-ningbo-reflection/</id>
+    <published>2016-10-23T10:34:56.000Z</published>
+    <updated>2016-10-23T11:32:11.000Z</updated>
+    
+    <content type="html">&lt;p&gt;九月下旬的时候，应老板要求为宁波的 TEDx 组织做了关于基因检测及中国人群基因的演讲。这是我第一次正儿八经的对着一大堆观众做公众演讲（学术交流型的演讲不算）。现场大概 200 多个观众，还是买票的！当时真的是亚历山大，改稿、练习了好几天。今天视频被放出来了，自己回看了一遍表现还是觉得感受良多，在这里记录一下。&lt;/p&gt;
+&lt;p&gt;先放视频——&lt;/p&gt;
+&lt;div class=&quot;video-container&quot;&gt;&lt;/div&gt;
+&lt;p&gt;看了视频，发现自己虽然没有伪装演说家成功，但表现好歹也不算太糟糕。不过，还是有几点值得去提高的——&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;台风问题 —— 应 TedX 主办方的要求，在演讲时我刻意增加了一些走动和肢体语言。不过，看视频发现，虽然走动不少，到一个位置后几乎没有停留就往下一个地方走了，看上去有点无头苍蝇的感觉。停下来的时候身体摇晃也有点多。&lt;/li&gt;
+&lt;li&gt;随机应变能力不强 —— 其实整个演讲的稿件都是先写好的，也练了很久。最后当天演讲的时候，有几个地方有点忘了，结果没有能够随机应变，导致现场有些卡壳。虽然感觉我不是能够脱口而出的类型，未来在演讲时可能还是要先写好讲稿，但也要尽量锻炼自己不照本宣科的能力。希望可以从依赖讲稿进化到只依赖提纲/PPT再进阶到即兴（希望吧。。。）&lt;/li&gt;
+&lt;li&gt;演讲内容 —— TEDx 这样的公众演讲和在学术、技术会议上做交流完全不同。学术交流时有非常清晰的主线和内容，但 TEDx 演讲完全是在考验一个人讲好一个好故事的能力。在逻辑自洽的技术上还是要尽可能的增加趣味性、与观众互动。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;看完大概就这点感想 —— 虽然我不觉得自己会变成靠演讲吃饭的 type（每次上台下来以后都会胃抽筋），但演讲能力还是很实用的 skill，未来有机会还是要多讲多练吧。&lt;/p&gt;
+&lt;p&gt;最后说说 TEDx —— TEDx 是 TED 官方&lt;strong&gt;认证&lt;/strong&gt;，但不属于 TED 官方活动的志愿者活动。我当天参加的活动是 TEDx 宁波 2016 年的年度大会，活动规模非常大，几百位观众、十多位讲者，但完全是由志愿者无偿组织的，让人非常钦佩。在场也有很多大牛讲者，和我这种去蹭讲的完全不一样，听了他们的演讲以后可谓受益良多，也知道了自己和真正的领域大牛们有多大的差距，千万不可自满！&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;九月下旬的时候，应老板要求为宁波的 TEDx 组织做了关于基因检测及中国人群基因的演讲。这是我第一次正儿八经的对着一大堆观众做公众演讲（学术交流型的演讲不算）。现场大概 200 多个观众，还是买票的！当时真的是亚历山大，改稿、练习了好几天。今天视频被放出来了，自己回看了一遍
+    
+    </summary>
+    
+      <category term="Irrelevant" scheme="http://xraywu.github.io/categories/Irrelevant/"/>
+    
+    
+      <category term="公众演讲" scheme="http://xraywu.github.io/tags/%E5%85%AC%E4%BC%97%E6%BC%94%E8%AE%B2/"/>
+    
+      <category term="TEDx" scheme="http://xraywu.github.io/tags/TEDx/"/>
+    
+      <category term="Public Speaking" scheme="http://xraywu.github.io/tags/Public-Speaking/"/>
+    
+      <category term="Gene" scheme="http://xraywu.github.io/tags/Gene/"/>
+    
+  </entry>
   
   <entry>
     <title>使用AWS IoT、Lambda及ML打造智能化设备（三）</title>
