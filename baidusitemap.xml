@@ -4,6 +4,30 @@
 
     
   <url>
+    <loc>http://xraywu.github.io/2017/02/18/docker-multi-host-networking-1/</loc>
+    <lastmod>2017-02-18T09:21:13.000Z</lastmod>
+    <data>
+        <display>
+        <title>HDFS Docker 容器跨宿主机通信方式的解决方案</title>
+        <pubTime>2017-02-18T07:39:15.000Z</pubTime>
+        
+        <tag>Docker</tag>
+         
+        <tag>Weave</tag>
+         
+        <tag>容器</tag>
+         
+         
+           
+             
+              <breadCrumb title="Snippet" url="http://xraywu.github.io/categories/Snippet/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://xraywu.github.io/2016/10/23/tedx-ningbo-reflection/</loc>
     <lastmod>2016-10-23T11:44:11.000Z</lastmod>
     <data>

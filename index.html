@@ -271,6 +271,145 @@
             
               
                 
+                <a class="post-title-link" href="/2017/02/18/docker-multi-host-networking-1/" itemprop="url">
+                  HDFS Docker 容器跨宿主机通信方式的解决方案
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2017-02-18T15:39:15+08:00" content="2017-02-18">
+              2017-02-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Snippet/" itemprop="url" rel="index">
+                    <span itemprop="name">Snippet</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/02/18/docker-multi-host-networking-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/18/docker-multi-host-networking-1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>公司本来有一套搭在单节点上的 Spark-HDFS 环境用于数据的离线计算和分析。在之前搭建的时候，为了运维和管理的方便，我们把所有依赖的服务都打包成了 Docker 镜像。部署之初，作为第一次运用容器到生产环境的我们虽然踩了不少坑，但一一解决之后，这套体系在生产中却基本没出过什么问题，运维也变得方便了不少——直到上周。因为公司业务规模变大，我们需要部署一个新的 HDFS 的 Datanode 节点到一台新的宿主机上。于是问题出现了，怎么能让新宿主机上的 HDFS Datanode 连接到原宿主机上的 HDFS Namenode 呢？为了解决这个问题，我们折腾了不少天，从 Docker 原生的网络解决方案到使用官方插件再到发现了神器 <strong>Weave</strong>，终于解决了这个问题。下面我们来看看各种方案的问题在哪里，以及是如何解决的。</p>
+<h3 id="容器化的-HDFS-要如何工作？"><a href="#容器化的-HDFS-要如何工作？" class="headerlink" title="容器化的 HDFS 要如何工作？"></a>容器化的 HDFS 要如何工作？</h3><p>熟悉 HDFS 的同学们肯定知道，HDFS 有 Namenode （类似 master）及 Datanode （类似 slave）之分，它们之间通过指定 IP 的方式互相进行通讯，并在这过程中使用了 SSH 协议。如果我们的 Namenode 和 Datanode 直接在两台互通的宿主机上，那么事情非常简单——互相配好对面的 IP 地址，并各自打开 <code>22</code> 端口即可。在这个过程中，Namenode 还会定时向 Datanode 告知自己的 IP 地址。</p>
+<p>然而如果它们分别在两个宿主机上的容器呢？事情就复杂了——正常情况下，两个宿主机上的容器是不能互相通讯的，不像一台宿主机上的两个容器，直接用 Docker 自带的 <code>--link</code> 参数就可以互相发现了。就这样，我们开始了艰难的网络调试……</p>
+<h3 id="Docker-的默认网络模式为什么不行？"><a href="#Docker-的默认网络模式为什么不行？" class="headerlink" title="Docker 的默认网络模式为什么不行？"></a>Docker 的默认网络模式为什么不行？</h3><p>在 Docker 默认的网络模式下，每个容器有自己的内部 IP，在默认情况下互相之间不可通讯。但是，像上面说的，一台宿主机上的两个容器可以直接通过 <code>--link</code> 参数并指名来互相发现。而如果需要把一个容器内的服务暴露给外网使用，则需要通过端口映射将容器中的某个端口在宿主机上的某个端口暴露出来，外部用户通过宿主机的地址进行访问。咋一看之下，这似乎就能让两个宿主机上的两个容器通信了不是——分别暴露自己的端口给宿主机，然后两边通过宿主机的地址进行连接。看上去完全可行。</p>
+<p>然而一实践，发现远没有那么简单——问题主要出在 HDFS的工作方式上。刚刚说过，Namenode 会向 Datanode 汇报自己的 IP，而一个容器中的Namenode会认为自己的 IP 是容器内部的 IP 地址，而不是宿主机的 IP，尽管我们在配置中已经给 Namenode 指定了 Datanode 所在宿主机的 IP。于是乎，我们的 Namenode 就错乱了……第一个方案就此枪毙。</p>
+<h3 id="那么-Docker-的-Host-网络模式呢"><a href="#那么-Docker-的-Host-网络模式呢" class="headerlink" title="那么 Docker 的 Host 网络模式呢"></a>那么 Docker 的 Host 网络模式呢</h3><p>熟悉 Docker 的同学肯定会想，哎呀，Docker 还有好几种网络模式呢。不就是容器会分配一个内部 IP 么？我们用 Docker 的 Host 网络模式好啦——在 Host 模式下，启动的容器会直接使用宿主机的网络，并沿用宿主机 IP，同时会把容器使用的端口在宿主机上暴露。这样一来，互相指定宿主机 IP 不就没有上面说的这种问题了吗？可是新的问题又出现了。</p>
+<p>这次问题仍然出现在 HDFS 的工作模式上——上面又又又说过了，Namenode 和 Datanode 是要用 SSH 协议通信的。使用了 Host 模式后，容器的 SSH 服务和宿主机的 SSH 服务又产生了冲突。当 Namenode 企图 SSH 到 Datanode 时，它只能访问到宿主机的 SSH 服务，而不是 Datanode 镜像的——我们总不能把宿主机的 SSH 服务停了吧？从实际角度，当然可以把宿主机的 SSH 端口给改了，但这显然不是一个好办法。</p>
+<h3 id="再来看看-Docker-的多宿主机网络扩展方案"><a href="#再来看看-Docker-的多宿主机网络扩展方案" class="headerlink" title="再来看看 Docker 的多宿主机网络扩展方案"></a>再来看看 Docker 的多宿主机网络扩展方案</h3><p>原生的 Docker 网络解决方案看来是行不通了，于是我们开始查 Docker 的官方文档，发现现在 Docker 已经提供了多宿主机的网络扩展方案（<a href="https://docs.docker.com/engine/userguide/networking/get-started-overlay/" target="_blank" rel="external">文档</a>）了，又叫做 Overlay 模式。其大致的思路在于使用一个 Key-Value Store 的中间件注册不同宿主机上的容器，并使它们互相发现和链接。很好，很简单。</p>
+<p>那就动手实践咯——按照文档里的说明，我们建了一个 Consule 的中间件，并建立了一个 overlay 网络供两边的容器加入，一切看上去都非常顺利，连通那是指日可待了，直到我们做完了所有步骤，开始 ping 的那一刻……</p>
+<p>不通！不知道为什么，两边的容器甚至都已经能够解析对方 host 的虚拟 IP了，仍然不能连接到对方——使用 <code>docker network inspect</code> 查看网络，可以发现两个容器都已经注册成功了，因此它们互相能够知道对方的 host 名字。可是为啥连不通？至今我仍然不知道……我相信是我们在某些配置上出了问题，但是文档里也没有更详细的说明了，网上的教程搜了搜，好像也没找到类似问题…… 有了解的同学请留言告知……</p>
+<h3 id="And-Weave-Works"><a href="#And-Weave-Works" class="headerlink" title="And Weave Works!"></a>And Weave Works!</h3><p>百般无奈之下，去求助了专门搞容器的朋友。人家说，你们还折腾什么劲啊？直接用 <a href="https://www.weave.works" target="_blank" rel="external">Weave</a> 就好啦，网上文章一搜一大把，很简单的……经过之前无数的挫折，其实我已然失去了信心……将信将疑的去试了试，嘿，成了，而且是如此简单。只恨动手前功课没做完整啊……</p>
+<p>那么介绍一下 <code>Weave</code> 是啥——简单来说，Weave 通过创建虚拟子网的方式，将不同的宿主机上的容器置于同一个虚拟网络内。不同宿主机上的容器可以直接通过容器名或虚拟 IP 进行连接，就好像处在同一个物理网络下一样。与此同时，Weave 仍然支持所有的 Docker 原生功能，比如用 port mapping 暴露容器端口给宿主机等等。在整个 Weave 网络部署的过程中，也不需要对宿主机或容器的网络做任何修改，非常简便。就像官方说的一样，Weave Works！</p>
+<p>具体的部署反而是非常简单的，我们基本就是按照<a href="http://tonylit.me/2016/03/29/docker-weave%E7%BD%91%E7%BB%9C%E4%BA%92%E8%BF%9E/" target="_blank" rel="external">这篇攻略</a>来进行的，没有做太多的变化。简单来说，就那么几步：</p>
+<ol>
+<li><a href="https://raw.githubusercontent.com/zettio/weave/master/weave" target="_blank" rel="external">下载</a> Weave 的执行脚本</li>
+<li>在两台宿主机上分别启动 Weave 服务（<code>weave launch</code> 命令），在这个过程中，Weave 会自动在宿主机上配置一个虚拟网卡，以及下载启动一些 Docker 容器作为服务中间件。第二台宿主机launch Weave 时指定要加入的第一台宿主机 IP（<code>weave launch ip-of-server1</code>）。</li>
+<li>在宿主机上分别用<code>weave run</code>启动容器，记得给容器一个名字。其他参数可以完全沿用 Docker 的参数。</li>
+<li>到容器里 ping 对方看看吧，现在两个容器已经可以互相通信了，so easy！</li>
+</ol>
+<p>此外，Weave 也有更多的高级功能，比如容器可以实时加入或退出 Weave 网络，或者使用宿主机网络等。总的来说，使用 Weave 极度降低了 Docker 在多宿主机网络下使用的复杂度，对容器化 HDFS 等需要分布式环境、本身网络配置就比较复杂的服务有极大的帮助。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/10/23/tedx-ningbo-reflection/" itemprop="url">
                   在 TEDx 宁波演讲后的一些体会
                 </a>
@@ -1324,7 +1463,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
@@ -1341,7 +1480,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">標籤</span>
               </a>
             </div>
