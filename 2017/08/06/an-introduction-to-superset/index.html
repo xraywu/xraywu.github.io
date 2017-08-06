@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Docker,Weave,容器," />
+  <meta name="keywords" content="Visualization,Superset,BI,可视化,Hive,Presto," />
 
 
 
@@ -88,16 +88,18 @@
 
 
 
-<meta name="description" content="公司本来有一套搭在单节点上的 Spark-HDFS 环境用于数据的离线计算和分析。在之前搭建的时候，为了运维和管理的方便，我们把所有依赖的服务都打包成了 Docker 镜像。部署之初，作为第一次运用容器到生产环境的我们虽然踩了不少坑，但一一解决之后，这套体系在生产中却基本没出过什么问题，运维也变得方便了不少——直到上周。因为公司业务规模变大，我们需要部署一个新的 HDFS 的 Datanode 节">
+<meta name="description" content="Superset （此前命名为Caravel 或 Panoramix）是由 Airbnb 开源，Apache 基金会孵化中的企业级 BI 工具，提供了一个基于 Web 的 BI 数据分析和可视化环境，并可连接多种不同数据源。当前，Superset 项目还在快速迭代中。不论是其官方文档还是中文社区，可以找到的资料和文档都比较分散，因此在使用中会有不少坑。因此，在这篇文章当中，我会介绍：1）Super">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HDFS Docker 容器跨宿主机通信方式的解决方案">
-<meta property="og:url" content="http://xraywu.github.io/2017/02/18/docker-multi-host-networking-1/index.html">
+<meta property="og:title" content="使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析">
+<meta property="og:url" content="http://xraywu.github.io/2017/08/06/an-introduction-to-superset/index.html">
 <meta property="og:site_name" content="Anthroraemon  |  人型叮當貓">
-<meta property="og:description" content="公司本来有一套搭在单节点上的 Spark-HDFS 环境用于数据的离线计算和分析。在之前搭建的时候，为了运维和管理的方便，我们把所有依赖的服务都打包成了 Docker 镜像。部署之初，作为第一次运用容器到生产环境的我们虽然踩了不少坑，但一一解决之后，这套体系在生产中却基本没出过什么问题，运维也变得方便了不少——直到上周。因为公司业务规模变大，我们需要部署一个新的 HDFS 的 Datanode 节">
-<meta property="og:updated_time" content="2017-02-18T09:21:13.000Z">
+<meta property="og:description" content="Superset （此前命名为Caravel 或 Panoramix）是由 Airbnb 开源，Apache 基金会孵化中的企业级 BI 工具，提供了一个基于 Web 的 BI 数据分析和可视化环境，并可连接多种不同数据源。当前，Superset 项目还在快速迭代中。不论是其官方文档还是中文社区，可以找到的资料和文档都比较分散，因此在使用中会有不少坑。因此，在这篇文章当中，我会介绍：1）Super">
+<meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202017-08-05%20at%203.22.34%20PM.png">
+<meta property="og:updated_time" content="2017-08-06T13:19:25.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HDFS Docker 容器跨宿主机通信方式的解决方案">
-<meta name="twitter:description" content="公司本来有一套搭在单节点上的 Spark-HDFS 环境用于数据的离线计算和分析。在之前搭建的时候，为了运维和管理的方便，我们把所有依赖的服务都打包成了 Docker 镜像。部署之初，作为第一次运用容器到生产环境的我们虽然踩了不少坑，但一一解决之后，这套体系在生产中却基本没出过什么问题，运维也变得方便了不少——直到上周。因为公司业务规模变大，我们需要部署一个新的 HDFS 的 Datanode 节">
+<meta name="twitter:title" content="使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析">
+<meta name="twitter:description" content="Superset （此前命名为Caravel 或 Panoramix）是由 Airbnb 开源，Apache 基金会孵化中的企业级 BI 工具，提供了一个基于 Web 的 BI 数据分析和可视化环境，并可连接多种不同数据源。当前，Superset 项目还在快速迭代中。不论是其官方文档还是中文社区，可以找到的资料和文档都比较分散，因此在使用中会有不少坑。因此，在这篇文章当中，我会介绍：1）Super">
+<meta name="twitter:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202017-08-05%20at%203.22.34%20PM.png">
 
 
 
@@ -125,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="http://xraywu.github.io/2017/02/18/docker-multi-host-networking-1/"/>
+  <link rel="canonical" href="http://xraywu.github.io/2017/08/06/an-introduction-to-superset/"/>
 
 
 
 
 
-  <title> HDFS Docker 容器跨宿主机通信方式的解决方案 | Anthroraemon  |  人型叮當貓 </title>
+  <title> 使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析 | Anthroraemon  |  人型叮當貓 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
@@ -280,7 +282,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2017/02/18/docker-multi-host-networking-1/">
+    <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2017/08/06/an-introduction-to-superset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="人型叮當貓">
@@ -301,7 +303,7 @@
             
             
               
-                HDFS Docker 容器跨宿主机通信方式的解决方案
+                使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析
               
             
           </h1>
@@ -316,8 +318,8 @@
               
                 <span class="post-meta-item-text">發表於</span>
               
-              <time title="創建於" itemprop="dateCreated datePublished" datetime="2017-02-18T15:39:15+08:00">
-                2017-02-18
+              <time title="創建於" itemprop="dateCreated datePublished" datetime="2017-08-06T21:06:16+08:00">
+                2017-08-06
               </time>
             
 
@@ -339,8 +341,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Snippet/" itemprop="url" rel="index">
-                    <span itemprop="name">Snippet</span>
+                  <a href="/categories/Visualization/" itemprop="url" rel="index">
+                    <span itemprop="name">Visualization</span>
                   </a>
                 </span>
 
@@ -357,7 +359,7 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a class="cloud-tie-join-count" href="/2017/02/18/docker-multi-host-networking-1/#comments" itemprop="discussionUrl">
+                <a class="cloud-tie-join-count" href="/2017/08/06/an-introduction-to-superset/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count join-count" itemprop="commentCount"></span>
                 </a>
               </span>
@@ -366,7 +368,7 @@
 
           
           
-             <span id="/2017/02/18/docker-multi-host-networking-1/" class="leancloud_visitors" data-flag-title="HDFS Docker 容器跨宿主机通信方式的解决方案">
+             <span id="/2017/08/06/an-introduction-to-superset/" class="leancloud_visitors" data-flag-title="使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -395,26 +397,45 @@
       
 
       
-        <p>公司本来有一套搭在单节点上的 Spark-HDFS 环境用于数据的离线计算和分析。在之前搭建的时候，为了运维和管理的方便，我们把所有依赖的服务都打包成了 Docker 镜像。部署之初，作为第一次运用容器到生产环境的我们虽然踩了不少坑，但一一解决之后，这套体系在生产中却基本没出过什么问题，运维也变得方便了不少——直到上周。因为公司业务规模变大，我们需要部署一个新的 HDFS 的 Datanode 节点到一台新的宿主机上。于是问题出现了，怎么能让新宿主机上的 HDFS Datanode 连接到原宿主机上的 HDFS Namenode 呢？为了解决这个问题，我们折腾了不少天，从 Docker 原生的网络解决方案到使用官方插件再到发现了神器 <strong>Weave</strong>，终于解决了这个问题。下面我们来看看各种方案的问题在哪里，以及是如何解决的。</p>
-<h3 id="容器化的-HDFS-要如何工作？"><a href="#容器化的-HDFS-要如何工作？" class="headerlink" title="容器化的 HDFS 要如何工作？"></a>容器化的 HDFS 要如何工作？</h3><p>熟悉 HDFS 的同学们肯定知道，HDFS 有 Namenode （类似 master）及 Datanode （类似 slave）之分，它们之间通过指定 IP 的方式互相进行通讯，并在这过程中使用了 SSH 协议。如果我们的 Namenode 和 Datanode 直接在两台互通的宿主机上，那么事情非常简单——互相配好对面的 IP 地址，并各自打开 <code>22</code> 端口即可。在这个过程中，Namenode 还会定时向 Datanode 告知自己的 IP 地址。</p>
-<p>然而如果它们分别在两个宿主机上的容器呢？事情就复杂了——正常情况下，两个宿主机上的容器是不能互相通讯的，不像一台宿主机上的两个容器，直接用 Docker 自带的 <code>--link</code> 参数就可以互相发现了。就这样，我们开始了艰难的网络调试……</p>
-<h3 id="Docker-的默认网络模式为什么不行？"><a href="#Docker-的默认网络模式为什么不行？" class="headerlink" title="Docker 的默认网络模式为什么不行？"></a>Docker 的默认网络模式为什么不行？</h3><p>在 Docker 默认的网络模式下，每个容器有自己的内部 IP，在默认情况下互相之间不可通讯。但是，像上面说的，一台宿主机上的两个容器可以直接通过 <code>--link</code> 参数并指名来互相发现。而如果需要把一个容器内的服务暴露给外网使用，则需要通过端口映射将容器中的某个端口在宿主机上的某个端口暴露出来，外部用户通过宿主机的地址进行访问。咋一看之下，这似乎就能让两个宿主机上的两个容器通信了不是——分别暴露自己的端口给宿主机，然后两边通过宿主机的地址进行连接。看上去完全可行。</p>
-<p>然而一实践，发现远没有那么简单——问题主要出在 HDFS的工作方式上。刚刚说过，Namenode 会向 Datanode 汇报自己的 IP，而一个容器中的Namenode会认为自己的 IP 是容器内部的 IP 地址，而不是宿主机的 IP，尽管我们在配置中已经给 Namenode 指定了 Datanode 所在宿主机的 IP。于是乎，我们的 Namenode 就错乱了……第一个方案就此枪毙。</p>
-<h3 id="那么-Docker-的-Host-网络模式呢"><a href="#那么-Docker-的-Host-网络模式呢" class="headerlink" title="那么 Docker 的 Host 网络模式呢"></a>那么 Docker 的 Host 网络模式呢</h3><p>熟悉 Docker 的同学肯定会想，哎呀，Docker 还有好几种网络模式呢。不就是容器会分配一个内部 IP 么？我们用 Docker 的 Host 网络模式好啦——在 Host 模式下，启动的容器会直接使用宿主机的网络，并沿用宿主机 IP，同时会把容器使用的端口在宿主机上暴露。这样一来，互相指定宿主机 IP 不就没有上面说的这种问题了吗？可是新的问题又出现了。</p>
-<p>这次问题仍然出现在 HDFS 的工作模式上——上面又又又说过了，Namenode 和 Datanode 是要用 SSH 协议通信的。使用了 Host 模式后，容器的 SSH 服务和宿主机的 SSH 服务又产生了冲突。当 Namenode 企图 SSH 到 Datanode 时，它只能访问到宿主机的 SSH 服务，而不是 Datanode 镜像的——我们总不能把宿主机的 SSH 服务停了吧？从实际角度，当然可以把宿主机的 SSH 端口给改了，但这显然不是一个好办法。</p>
-<h3 id="再来看看-Docker-的多宿主机网络扩展方案"><a href="#再来看看-Docker-的多宿主机网络扩展方案" class="headerlink" title="再来看看 Docker 的多宿主机网络扩展方案"></a>再来看看 Docker 的多宿主机网络扩展方案</h3><p>原生的 Docker 网络解决方案看来是行不通了，于是我们开始查 Docker 的官方文档，发现现在 Docker 已经提供了多宿主机的网络扩展方案（<a href="https://docs.docker.com/engine/userguide/networking/get-started-overlay/" target="_blank" rel="external">文档</a>）了，又叫做 Overlay 模式。其大致的思路在于使用一个 Key-Value Store 的中间件注册不同宿主机上的容器，并使它们互相发现和链接。很好，很简单。</p>
-<p>那就动手实践咯——按照文档里的说明，我们建了一个 Consule 的中间件，并建立了一个 overlay 网络供两边的容器加入，一切看上去都非常顺利，连通那是指日可待了，直到我们做完了所有步骤，开始 ping 的那一刻……</p>
-<p>不通！不知道为什么，两边的容器甚至都已经能够解析对方 host 的虚拟 IP了，仍然不能连接到对方——使用 <code>docker network inspect</code> 查看网络，可以发现两个容器都已经注册成功了，因此它们互相能够知道对方的 host 名字。可是为啥连不通？至今我仍然不知道……我相信是我们在某些配置上出了问题，但是文档里也没有更详细的说明了，网上的教程搜了搜，好像也没找到类似问题…… 有了解的同学请留言告知……</p>
-<h3 id="And-Weave-Works"><a href="#And-Weave-Works" class="headerlink" title="And Weave Works!"></a>And Weave Works!</h3><p>百般无奈之下，去求助了专门搞容器的朋友。人家说，你们还折腾什么劲啊？直接用 <a href="https://www.weave.works" target="_blank" rel="external">Weave</a> 就好啦，网上文章一搜一大把，很简单的……经过之前无数的挫折，其实我已然失去了信心……将信将疑的去试了试，嘿，成了，而且是如此简单。只恨动手前功课没做完整啊……</p>
-<p>那么介绍一下 <code>Weave</code> 是啥——简单来说，Weave 通过创建虚拟子网的方式，将不同的宿主机上的容器置于同一个虚拟网络内。不同宿主机上的容器可以直接通过容器名或虚拟 IP 进行连接，就好像处在同一个物理网络下一样。与此同时，Weave 仍然支持所有的 Docker 原生功能，比如用 port mapping 暴露容器端口给宿主机等等。在整个 Weave 网络部署的过程中，也不需要对宿主机或容器的网络做任何修改，非常简便。就像官方说的一样，Weave Works！</p>
-<p>具体的部署反而是非常简单的，我们基本就是按照<a href="http://tonylit.me/2016/03/29/docker-weave%E7%BD%91%E7%BB%9C%E4%BA%92%E8%BF%9E/" target="_blank" rel="external">这篇攻略</a>来进行的，没有做太多的变化。简单来说，就那么几步：</p>
-<ol>
-<li><a href="https://raw.githubusercontent.com/zettio/weave/master/weave" target="_blank" rel="external">下载</a> Weave 的执行脚本</li>
-<li>在两台宿主机上分别启动 Weave 服务（<code>weave launch</code> 命令），在这个过程中，Weave 会自动在宿主机上配置一个虚拟网卡，以及下载启动一些 Docker 容器作为服务中间件。第二台宿主机launch Weave 时指定要加入的第一台宿主机 IP（<code>weave launch ip-of-server1</code>）。</li>
-<li>在宿主机上分别用<code>weave run</code>启动容器，记得给容器一个名字。其他参数可以完全沿用 Docker 的参数。</li>
-<li>到容器里 ping 对方看看吧，现在两个容器已经可以互相通信了，so easy！</li>
-</ol>
-<p>此外，Weave 也有更多的高级功能，比如容器可以实时加入或退出 Weave 网络，或者使用宿主机网络等。总的来说，使用 Weave 极度降低了 Docker 在多宿主机网络下使用的复杂度，对容器化 HDFS 等需要分布式环境、本身网络配置就比较复杂的服务有极大的帮助。</p>
+        <p><a href="https://github.com/apache/incubator-superset" target="_blank" rel="external">Superset</a> （此前命名为<code>Caravel</code> 或 <code>Panoramix</code>）是由 Airbnb 开源，Apache 基金会孵化中的企业级 BI 工具，提供了一个基于 Web 的 BI 数据分析和可视化环境，并可连接多种不同数据源。当前，Superset 项目还在快速迭代中。不论是其官方文档还是中文社区，可以找到的资料和文档都比较分散，因此在使用中会有不少坑。因此，在这篇文章当中，我会介绍：1）Superset 的环境搭建，特别是如何连接 Hive 数据仓储；2）Superset 使用中的一些基本概念；3）Superset 与其他企业级 BI 工具，如 Tableau 之间的比较。</p>
+<h3 id="Superset-的环境搭建与-Hive-连接"><a href="#Superset-的环境搭建与-Hive-连接" class="headerlink" title="Superset 的环境搭建与 Hive 连接"></a>Superset 的环境搭建与 Hive 连接</h3><p>Superset 的后端主要基于 Python Flask 框架开发，因此要安装 Superset 首先需要 Python 的运行环境。此外，Superset 对数据源的连接主要通过 Python 的 <code>SQLAlchemy</code> 包实现——也就是说，任何数据源只要有 SQLAlchemy 的方言实现即可。因此，尽管当前 Superset 官方并不支持对 Hive/Presto 的连接，但通过自行安装 Dropbox 开源的 <a href="https://github.com/dropbox/PyHive" target="_blank" rel="external">PyHive</a> （其中包含 Hive/Presto 的 SQLAlchemy 实现），即可达成目的。</p>
+<p>通过这样的配置，在填写数据源地址时，通过下面的链接形式即可连接到 Hive/Presto （这里强烈建议使用 Presto，比起 Hive 原生的 MapReduce 要快一个数量级，而且配置相当简单。Airbnb 官方人员在 Superset 的 Github 项目上也是这么推荐的）。</p>
+<ul>
+<li>Hive</li>
+</ul>
+<p><code>hive://user:password@host:port/database</code></p>
+<ul>
+<li>Presto</li>
+</ul>
+<p><code>presto://user:password@host:port/hive/database</code></p>
+<hr>
+<p>下面就是一个基于 Docker 的环境搭建(参考了<a href="https://hub.docker.com/r/tyyzqmf/superset/" target="_blank" rel="external">这个</a>镜像，包括构建过程中需要的文件)——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"># PyHive + Superset 当前在 Python3 下还不稳定</div><div class="line">FROM python:2.7</div><div class="line"></div><div class="line"># Configure environment</div><div class="line">ENV LANG=C.UTF-8 \</div><div class="line">    LC_ALL=C.UTF-8 \</div><div class="line">    PATH=$PATH:/home/superset/.bin \</div><div class="line">    PYTHONPATH=/home/superset/.superset:$PYTHONPATH \</div><div class="line">    SUPERSET_VERSION=0.19.0</div><div class="line"></div><div class="line">RUN apt-get update</div><div class="line">RUN apt-get install -y curl python-dev libmysqlclient-dev build-essential libsasl2-dev</div><div class="line">RUN pip install --upgrade pip</div><div class="line">RUN pip install superset mysqlclient ldap3 psycopg2 redis pythrifthiveapi pyhive flask-oauth flask_oauthlib flask-mail sqlalchemy-redshift</div><div class="line"></div><div class="line">RUN adduser superset &amp;&amp; \</div><div class="line">    mkdir /home/superset/.superset &amp;&amp; \</div><div class="line">    touch /home/superset/.superset/superset.db &amp;&amp; \</div><div class="line">    chown -R superset:superset /home/superset</div><div class="line"></div><div class="line"># Configure Filesysten</div><div class="line">WORKDIR /home/superset</div><div class="line">COPY superset .</div><div class="line">RUN chmod -R 777 .</div><div class="line">VOLUME /home/superset/.superset</div><div class="line"></div><div class="line"># Deploy application</div><div class="line">EXPOSE 8088</div><div class="line">HEALTHCHECK CMD [&quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:8088/health&quot;]</div><div class="line">ENTRYPOINT [&quot;superset&quot;]</div><div class="line">CMD [&quot;runserver&quot;]</div><div class="line">USER superset</div></pre></td></tr></table></figure>
+<p>构建完毕后，即可启动环境——</p>
+<ul>
+<li>启动镜像</li>
+</ul>
+<p><code>docker run --detach --name superset -p 8088:8088 superset</code></p>
+<ul>
+<li>初始化账户</li>
+</ul>
+<p><code>docker exec -it superset superset-init</code></p>
+<p>好了，打开你的浏览器，进入 <code>http://localhost:8088</code> 使用 Superset 吧！</p>
+<h3 id="Superset-的一些基本概念"><a href="#Superset-的一些基本概念" class="headerlink" title="Superset 的一些基本概念"></a>Superset 的一些基本概念</h3><ul>
+<li>Database：一个数据源，比如 Hive 里的一个数据库 </li>
+<li>Table：查询数据表，目前在 Superset 中任何一张可视化图都是基于 <strong>一个</strong> Table的。也就是说，如果需要对连表数据进行可视化，需要先通过创建相应的 Query，并把 Query 结果转化为一个 Superset 中的 Table 才行。</li>
+<li>Slice：基于 Table 的一个查询。任何可视化都是基于一个 Slice 的查询结果而构建的。</li>
+<li>Visualization：基于一个 Slice 实现的可视化图，官方包自带了几乎所有的常见图标类型。</li>
+<li>Dashboard：一组 Visualization 的集合。</li>
+<li>Metrics：对聚合（Group）数据进行处理的方法——<strong>要注意，创建表时默认的 metrics 只有 Count 一种，这比较让人困惑，因为此时在 Group By 数据以后，在 y 轴上只能选择计数，而无法选择其他处理方式比如 Avg。解决方法是直接进入表编辑，通过 SQL 语法为其创建其他 metrics，再进入可视化编辑器选择。</strong></li>
+</ul>
+<p>了解了这些概念，在界面上点点用用，估计你就能掌握 Superset 的基本用法啦。具体我这里就不展开了，有问题可以参考<a href="https://superset.incubator.apache.org" target="_blank" rel="external">官方文档</a>。</p>
+<h3 id="Superset-与其他企业级-BI-工具的比较"><a href="#Superset-与其他企业级-BI-工具的比较" class="headerlink" title="Superset 与其他企业级 BI 工具的比较"></a>Superset 与其他企业级 BI 工具的比较</h3><p>在当前版本（0.19.x），我认为，Superset 与其他企业级 BI 工具（如 Tableau、QlickView等）相比，最大的不同在于，<strong>其目标用户更多的是数据分析师、数据科学家，而非一般企业中的业务人员，因为其对用户的数据分析基本技能（如 SQL 等），要求更高。</strong></p>
+<p>长久以来，在应用企业 BI 时，我认为业界一直有一种迷思，也就是希望业务人员有能力去操作 BI 软件（比如创建不同图表类型、对不同数据维度进行组合、下钻等）。为了尽可能的让他们获取这种能力，当前的 BI 软件都尽可能得做的“非常傻瓜”，比如只要通过拖拉即可组合数据维度、通过点击即可设置各种图表属性。尽管如此，但在实际情况中，根据我的观察，有这样能力的业务用户绝对不超过 5%，以至于在所谓的 “BI” 部门中，敢说自己精通公司 BI 软件的，可能也不超过三成（明明有 BI 工具和大量数据源，每个月最后还是在离线拉数据、做 Excel 报表）。此时，公司的 IT 部门会怎么做呢？答案是用乙方——基于 BI 软件再二次开发一套报表系统出来，当中内嵌好预先设定好的数据报表。在这样的情况下，无论软件如何“傻瓜化”，没有基础技能的用户仍然不会去使用，而对数据分析师、科学家来说，这样的傻瓜化所牺牲的灵活度，又显得过于小儿科了。</p>
+<p>Superset 则索性走出了这一矛盾。可以说，如果你不具备一定的基础开发能力，是很难去使用 Superset 的。不管是基于已有表去创建新的表作为数据源，还是创建 metrics，都需要用户自行去定义一些 SQL 语句。把数据分析的活儿彻底交还给数据分析专家去吧——业务人员安安心心去看 Dashboard 就好。当然，你可以说这是因为 Superset 还在早期，暂时没有顾上这方面的需求，但我对这一观点存疑——从界面上无处不在的 SQL 一词即可看出，这不是 Superset 想要发展的方向。 </p>
+<p>当然，Superset 目前仍然是一个快速发展中的孵化项目，未来变化也难预料。相比其他 BI 软件，坑较多，Bug 也不少，这都是上生产需要考虑的现实因素。奈何人家是开源的不是？比起 Tableau 动辄上万的 License（别误会，我是 Tableau 的大粉丝！），自己去填填坑也是应该的。</p>
+<p>最后，发张 Demo 图吧。不好意思，好像打了很多码的样子 :)</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202017-08-05%20at%203.22.34%20PM.png" alt="Superset Demo"></p>
 
       
     </div>
@@ -444,11 +465,17 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Docker/" rel="tag"># Docker</a>
+            <a href="/tags/Visualization/" rel="tag"># Visualization</a>
           
-            <a href="/tags/Weave/" rel="tag"># Weave</a>
+            <a href="/tags/Superset/" rel="tag"># Superset</a>
           
-            <a href="/tags/容器/" rel="tag"># 容器</a>
+            <a href="/tags/BI/" rel="tag"># BI</a>
+          
+            <a href="/tags/可视化/" rel="tag"># 可视化</a>
+          
+            <a href="/tags/Hive/" rel="tag"># Hive</a>
+          
+            <a href="/tags/Presto/" rel="tag"># Presto</a>
           
         </div>
       
@@ -461,8 +488,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/10/23/tedx-ningbo-reflection/" rel="next" title="在 TEDx 宁波演讲后的一些体会">
-                <i class="fa fa-chevron-left"></i> 在 TEDx 宁波演讲后的一些体会
+              <a href="/2017/07/13/not-everyone-can-become-a-pm/" rel="next" title="关于“人人都是产品经理”的一点迷思">
+                <i class="fa fa-chevron-left"></i> 关于“人人都是产品经理”的一点迷思
               </a>
             
           </div>
@@ -470,10 +497,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/07/13/not-everyone-can-become-a-pm/" rel="prev" title="关于“人人都是产品经理”的一点迷思">
-                关于“人人都是产品经理”的一点迷思 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -611,7 +634,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#容器化的-HDFS-要如何工作？"><span class="nav-number">1.</span> <span class="nav-text">容器化的 HDFS 要如何工作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-的默认网络模式为什么不行？"><span class="nav-number">2.</span> <span class="nav-text">Docker 的默认网络模式为什么不行？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#那么-Docker-的-Host-网络模式呢"><span class="nav-number">3.</span> <span class="nav-text">那么 Docker 的 Host 网络模式呢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再来看看-Docker-的多宿主机网络扩展方案"><span class="nav-number">4.</span> <span class="nav-text">再来看看 Docker 的多宿主机网络扩展方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#And-Weave-Works"><span class="nav-number">5.</span> <span class="nav-text">And Weave Works!</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Superset-的环境搭建与-Hive-连接"><span class="nav-number">1.</span> <span class="nav-text">Superset 的环境搭建与 Hive 连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Superset-的一些基本概念"><span class="nav-number">2.</span> <span class="nav-text">Superset 的一些基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Superset-与其他企业级-BI-工具的比较"><span class="nav-number">3.</span> <span class="nav-text">Superset 与其他企业级 BI 工具的比较</span></a></li></ol></div>
             
 
           </div>

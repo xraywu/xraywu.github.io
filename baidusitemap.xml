@@ -4,6 +4,36 @@
 
     
   <url>
+    <loc>http://xraywu.github.io/2017/08/06/an-introduction-to-superset/</loc>
+    <lastmod>2017-08-06T13:19:25.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析</title>
+        <pubTime>2017-08-06T13:06:16.000Z</pubTime>
+        
+        <tag>Visualization</tag>
+         
+        <tag>Superset</tag>
+         
+        <tag>BI</tag>
+         
+        <tag>可视化</tag>
+         
+        <tag>Hive</tag>
+         
+        <tag>Presto</tag>
+         
+         
+           
+             
+              <breadCrumb title="Visualization" url="http://xraywu.github.io/categories/Visualization/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://xraywu.github.io/2017/07/13/not-everyone-can-become-a-pm/</loc>
     <lastmod>2017-07-13T03:12:53.000Z</lastmod>
     <data>
@@ -179,12 +209,12 @@
 
     
   <url>
-    <loc>http://xraywu.github.io/2016/01/08/humanapi-demo/</loc>
+    <loc>http://xraywu.github.io/2015/12/08/passport-oauth/</loc>
     <lastmod>2016-03-18T06:24:59.000Z</lastmod>
     <data>
         <display>
-        <title>HumanAPI介绍及Demo</title>
-        <pubTime>2016-01-08T06:36:57.000Z</pubTime>
+        <title>使用Passport快速搭建用户验证及第三方应用OAuth授权</title>
+        <pubTime>2015-12-08T09:02:33.000Z</pubTime>
         
         <tag>Coding</tag>
          
@@ -201,12 +231,12 @@
 
     
   <url>
-    <loc>http://xraywu.github.io/2015/12/08/passport-oauth/</loc>
+    <loc>http://xraywu.github.io/2016/01/08/humanapi-demo/</loc>
     <lastmod>2016-03-18T06:24:59.000Z</lastmod>
     <data>
         <display>
-        <title>使用Passport快速搭建用户验证及第三方应用OAuth授权</title>
-        <pubTime>2015-12-08T09:02:33.000Z</pubTime>
+        <title>HumanAPI介绍及Demo</title>
+        <pubTime>2016-01-08T06:36:57.000Z</pubTime>
         
         <tag>Coding</tag>
          

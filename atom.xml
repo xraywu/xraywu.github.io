@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xraywu.github.io/"/>
-  <updated>2017-07-13T03:12:53.000Z</updated>
+  <updated>2017-08-06T13:19:25.000Z</updated>
   <id>http://xraywu.github.io/</id>
   
   <author>
@@ -14,6 +14,77 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析</title>
+    <link href="http://xraywu.github.io/2017/08/06/an-introduction-to-superset/"/>
+    <id>http://xraywu.github.io/2017/08/06/an-introduction-to-superset/</id>
+    <published>2017-08-06T13:06:16.000Z</published>
+    <updated>2017-08-06T13:19:25.000Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;a href=&quot;https://github.com/apache/incubator-superset&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Superset&lt;/a&gt; （此前命名为&lt;code&gt;Caravel&lt;/code&gt; 或 &lt;code&gt;Panoramix&lt;/code&gt;）是由 Airbnb 开源，Apache 基金会孵化中的企业级 BI 工具，提供了一个基于 Web 的 BI 数据分析和可视化环境，并可连接多种不同数据源。当前，Superset 项目还在快速迭代中。不论是其官方文档还是中文社区，可以找到的资料和文档都比较分散，因此在使用中会有不少坑。因此，在这篇文章当中，我会介绍：1）Superset 的环境搭建，特别是如何连接 Hive 数据仓储；2）Superset 使用中的一些基本概念；3）Superset 与其他企业级 BI 工具，如 Tableau 之间的比较。&lt;/p&gt;
+&lt;h3 id=&quot;Superset-的环境搭建与-Hive-连接&quot;&gt;&lt;a href=&quot;#Superset-的环境搭建与-Hive-连接&quot; class=&quot;headerlink&quot; title=&quot;Superset 的环境搭建与 Hive 连接&quot;&gt;&lt;/a&gt;Superset 的环境搭建与 Hive 连接&lt;/h3&gt;&lt;p&gt;Superset 的后端主要基于 Python Flask 框架开发，因此要安装 Superset 首先需要 Python 的运行环境。此外，Superset 对数据源的连接主要通过 Python 的 &lt;code&gt;SQLAlchemy&lt;/code&gt; 包实现——也就是说，任何数据源只要有 SQLAlchemy 的方言实现即可。因此，尽管当前 Superset 官方并不支持对 Hive/Presto 的连接，但通过自行安装 Dropbox 开源的 &lt;a href=&quot;https://github.com/dropbox/PyHive&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;PyHive&lt;/a&gt; （其中包含 Hive/Presto 的 SQLAlchemy 实现），即可达成目的。&lt;/p&gt;
+&lt;p&gt;通过这样的配置，在填写数据源地址时，通过下面的链接形式即可连接到 Hive/Presto （这里强烈建议使用 Presto，比起 Hive 原生的 MapReduce 要快一个数量级，而且配置相当简单。Airbnb 官方人员在 Superset 的 Github 项目上也是这么推荐的）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hive&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;hive://user:password@host:port/database&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Presto&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;presto://user:password@host:port/hive/database&lt;/code&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;下面就是一个基于 Docker 的环境搭建(参考了&lt;a href=&quot;https://hub.docker.com/r/tyyzqmf/superset/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这个&lt;/a&gt;镜像，包括构建过程中需要的文件)——&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;# PyHive + Superset 当前在 Python3 下还不稳定&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;FROM python:2.7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;# Configure environment&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;ENV LANG=C.UTF-8 \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    LC_ALL=C.UTF-8 \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    PATH=$PATH:/home/superset/.bin \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    PYTHONPATH=/home/superset/.superset:$PYTHONPATH \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    SUPERSET_VERSION=0.19.0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;RUN apt-get update&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;RUN apt-get install -y curl python-dev libmysqlclient-dev build-essential libsasl2-dev&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;RUN pip install --upgrade pip&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;RUN pip install superset mysqlclient ldap3 psycopg2 redis pythrifthiveapi pyhive flask-oauth flask_oauthlib flask-mail sqlalchemy-redshift&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;RUN adduser superset &amp;amp;&amp;amp; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    mkdir /home/superset/.superset &amp;amp;&amp;amp; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    touch /home/superset/.superset/superset.db &amp;amp;&amp;amp; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    chown -R superset:superset /home/superset&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;# Configure Filesysten&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;WORKDIR /home/superset&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;COPY superset .&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;RUN chmod -R 777 .&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;VOLUME /home/superset/.superset&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;# Deploy application&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;EXPOSE 8088&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;HEALTHCHECK CMD [&amp;quot;curl&amp;quot;, &amp;quot;-f&amp;quot;, &amp;quot;http://localhost:8088/health&amp;quot;]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;ENTRYPOINT [&amp;quot;superset&amp;quot;]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;CMD [&amp;quot;runserver&amp;quot;]&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;USER superset&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;构建完毕后，即可启动环境——&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;启动镜像&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;docker run --detach --name superset -p 8088:8088 superset&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;初始化账户&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;docker exec -it superset superset-init&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;好了，打开你的浏览器，进入 &lt;code&gt;http://localhost:8088&lt;/code&gt; 使用 Superset 吧！&lt;/p&gt;
+&lt;h3 id=&quot;Superset-的一些基本概念&quot;&gt;&lt;a href=&quot;#Superset-的一些基本概念&quot; class=&quot;headerlink&quot; title=&quot;Superset 的一些基本概念&quot;&gt;&lt;/a&gt;Superset 的一些基本概念&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Database：一个数据源，比如 Hive 里的一个数据库 &lt;/li&gt;
+&lt;li&gt;Table：查询数据表，目前在 Superset 中任何一张可视化图都是基于 &lt;strong&gt;一个&lt;/strong&gt; Table的。也就是说，如果需要对连表数据进行可视化，需要先通过创建相应的 Query，并把 Query 结果转化为一个 Superset 中的 Table 才行。&lt;/li&gt;
+&lt;li&gt;Slice：基于 Table 的一个查询。任何可视化都是基于一个 Slice 的查询结果而构建的。&lt;/li&gt;
+&lt;li&gt;Visualization：基于一个 Slice 实现的可视化图，官方包自带了几乎所有的常见图标类型。&lt;/li&gt;
+&lt;li&gt;Dashboard：一组 Visualization 的集合。&lt;/li&gt;
+&lt;li&gt;Metrics：对聚合（Group）数据进行处理的方法——&lt;strong&gt;要注意，创建表时默认的 metrics 只有 Count 一种，这比较让人困惑，因为此时在 Group By 数据以后，在 y 轴上只能选择计数，而无法选择其他处理方式比如 Avg。解决方法是直接进入表编辑，通过 SQL 语法为其创建其他 metrics，再进入可视化编辑器选择。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;了解了这些概念，在界面上点点用用，估计你就能掌握 Superset 的基本用法啦。具体我这里就不展开了，有问题可以参考&lt;a href=&quot;https://superset.incubator.apache.org&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;Superset-与其他企业级-BI-工具的比较&quot;&gt;&lt;a href=&quot;#Superset-与其他企业级-BI-工具的比较&quot; class=&quot;headerlink&quot; title=&quot;Superset 与其他企业级 BI 工具的比较&quot;&gt;&lt;/a&gt;Superset 与其他企业级 BI 工具的比较&lt;/h3&gt;&lt;p&gt;在当前版本（0.19.x），我认为，Superset 与其他企业级 BI 工具（如 Tableau、QlickView等）相比，最大的不同在于，&lt;strong&gt;其目标用户更多的是数据分析师、数据科学家，而非一般企业中的业务人员，因为其对用户的数据分析基本技能（如 SQL 等），要求更高。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;长久以来，在应用企业 BI 时，我认为业界一直有一种迷思，也就是希望业务人员有能力去操作 BI 软件（比如创建不同图表类型、对不同数据维度进行组合、下钻等）。为了尽可能的让他们获取这种能力，当前的 BI 软件都尽可能得做的“非常傻瓜”，比如只要通过拖拉即可组合数据维度、通过点击即可设置各种图表属性。尽管如此，但在实际情况中，根据我的观察，有这样能力的业务用户绝对不超过 5%，以至于在所谓的 “BI” 部门中，敢说自己精通公司 BI 软件的，可能也不超过三成（明明有 BI 工具和大量数据源，每个月最后还是在离线拉数据、做 Excel 报表）。此时，公司的 IT 部门会怎么做呢？答案是用乙方——基于 BI 软件再二次开发一套报表系统出来，当中内嵌好预先设定好的数据报表。在这样的情况下，无论软件如何“傻瓜化”，没有基础技能的用户仍然不会去使用，而对数据分析师、科学家来说，这样的傻瓜化所牺牲的灵活度，又显得过于小儿科了。&lt;/p&gt;
+&lt;p&gt;Superset 则索性走出了这一矛盾。可以说，如果你不具备一定的基础开发能力，是很难去使用 Superset 的。不管是基于已有表去创建新的表作为数据源，还是创建 metrics，都需要用户自行去定义一些 SQL 语句。把数据分析的活儿彻底交还给数据分析专家去吧——业务人员安安心心去看 Dashboard 就好。当然，你可以说这是因为 Superset 还在早期，暂时没有顾上这方面的需求，但我对这一观点存疑——从界面上无处不在的 SQL 一词即可看出，这不是 Superset 想要发展的方向。 &lt;/p&gt;
+&lt;p&gt;当然，Superset 目前仍然是一个快速发展中的孵化项目，未来变化也难预料。相比其他 BI 软件，坑较多，Bug 也不少，这都是上生产需要考虑的现实因素。奈何人家是开源的不是？比起 Tableau 动辄上万的 License（别误会，我是 Tableau 的大粉丝！），自己去填填坑也是应该的。&lt;/p&gt;
+&lt;p&gt;最后，发张 Demo 图吧。不好意思，好像打了很多码的样子 :)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202017-08-05%20at%203.22.34%20PM.png&quot; alt=&quot;Superset Demo&quot;&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;https://github.com/apache/incubator-superset&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Superset&lt;/a&gt; （此前命名为&lt;code&gt;Caravel&lt;/code&gt; 或 &lt;code&gt;Pan
+    
+    </summary>
+    
+      <category term="Visualization" scheme="http://xraywu.github.io/categories/Visualization/"/>
+    
+    
+      <category term="Visualization" scheme="http://xraywu.github.io/tags/Visualization/"/>
+    
+      <category term="Superset" scheme="http://xraywu.github.io/tags/Superset/"/>
+    
+      <category term="BI" scheme="http://xraywu.github.io/tags/BI/"/>
+    
+      <category term="可视化" scheme="http://xraywu.github.io/tags/%E5%8F%AF%E8%A7%86%E5%8C%96/"/>
+    
+      <category term="Hive" scheme="http://xraywu.github.io/tags/Hive/"/>
+    
+      <category term="Presto" scheme="http://xraywu.github.io/tags/Presto/"/>
+    
+  </entry>
   
   <entry>
     <title>关于“人人都是产品经理”的一点迷思</title>

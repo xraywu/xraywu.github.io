@@ -278,6 +278,198 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2017/08/06/an-introduction-to-superset/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="人型叮當貓">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/default_avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anthroraemon  |  人型叮當貓">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/08/06/an-introduction-to-superset/" itemprop="url">
+                  使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">發表於</span>
+              
+              <time title="創建於" itemprop="dateCreated datePublished" datetime="2017-08-06T21:06:16+08:00">
+                2017-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Visualization/" itemprop="url" rel="index">
+                    <span itemprop="name">Visualization</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/08/06/an-introduction-to-superset/" class="leancloud_visitors" data-flag-title="使用开源数据 BI 工具 Superset 对 Hive 仓储数据进行可视化分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">閱讀次數 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://github.com/apache/incubator-superset" target="_blank" rel="external">Superset</a> （此前命名为<code>Caravel</code> 或 <code>Panoramix</code>）是由 Airbnb 开源，Apache 基金会孵化中的企业级 BI 工具，提供了一个基于 Web 的 BI 数据分析和可视化环境，并可连接多种不同数据源。当前，Superset 项目还在快速迭代中。不论是其官方文档还是中文社区，可以找到的资料和文档都比较分散，因此在使用中会有不少坑。因此，在这篇文章当中，我会介绍：1）Superset 的环境搭建，特别是如何连接 Hive 数据仓储；2）Superset 使用中的一些基本概念；3）Superset 与其他企业级 BI 工具，如 Tableau 之间的比较。</p>
+<h3 id="Superset-的环境搭建与-Hive-连接"><a href="#Superset-的环境搭建与-Hive-连接" class="headerlink" title="Superset 的环境搭建与 Hive 连接"></a>Superset 的环境搭建与 Hive 连接</h3><p>Superset 的后端主要基于 Python Flask 框架开发，因此要安装 Superset 首先需要 Python 的运行环境。此外，Superset 对数据源的连接主要通过 Python 的 <code>SQLAlchemy</code> 包实现——也就是说，任何数据源只要有 SQLAlchemy 的方言实现即可。因此，尽管当前 Superset 官方并不支持对 Hive/Presto 的连接，但通过自行安装 Dropbox 开源的 <a href="https://github.com/dropbox/PyHive" target="_blank" rel="external">PyHive</a> （其中包含 Hive/Presto 的 SQLAlchemy 实现），即可达成目的。</p>
+<p>通过这样的配置，在填写数据源地址时，通过下面的链接形式即可连接到 Hive/Presto （这里强烈建议使用 Presto，比起 Hive 原生的 MapReduce 要快一个数量级，而且配置相当简单。Airbnb 官方人员在 Superset 的 Github 项目上也是这么推荐的）。</p>
+<ul>
+<li>Hive</li>
+</ul>
+<p><code>hive://user:password@host:port/database</code></p>
+<ul>
+<li>Presto</li>
+</ul>
+<p><code>presto://user:password@host:port/hive/database</code></p>
+<hr>
+<p>下面就是一个基于 Docker 的环境搭建(参考了<a href="https://hub.docker.com/r/tyyzqmf/superset/" target="_blank" rel="external">这个</a>镜像，包括构建过程中需要的文件)——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"># PyHive + Superset 当前在 Python3 下还不稳定</div><div class="line">FROM python:2.7</div><div class="line"></div><div class="line"># Configure environment</div><div class="line">ENV LANG=C.UTF-8 \</div><div class="line">    LC_ALL=C.UTF-8 \</div><div class="line">    PATH=$PATH:/home/superset/.bin \</div><div class="line">    PYTHONPATH=/home/superset/.superset:$PYTHONPATH \</div><div class="line">    SUPERSET_VERSION=0.19.0</div><div class="line"></div><div class="line">RUN apt-get update</div><div class="line">RUN apt-get install -y curl python-dev libmysqlclient-dev build-essential libsasl2-dev</div><div class="line">RUN pip install --upgrade pip</div><div class="line">RUN pip install superset mysqlclient ldap3 psycopg2 redis pythrifthiveapi pyhive flask-oauth flask_oauthlib flask-mail sqlalchemy-redshift</div><div class="line"></div><div class="line">RUN adduser superset &amp;&amp; \</div><div class="line">    mkdir /home/superset/.superset &amp;&amp; \</div><div class="line">    touch /home/superset/.superset/superset.db &amp;&amp; \</div><div class="line">    chown -R superset:superset /home/superset</div><div class="line"></div><div class="line"># Configure Filesysten</div><div class="line">WORKDIR /home/superset</div><div class="line">COPY superset .</div><div class="line">RUN chmod -R 777 .</div><div class="line">VOLUME /home/superset/.superset</div><div class="line"></div><div class="line"># Deploy application</div><div class="line">EXPOSE 8088</div><div class="line">HEALTHCHECK CMD [&quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:8088/health&quot;]</div><div class="line">ENTRYPOINT [&quot;superset&quot;]</div><div class="line">CMD [&quot;runserver&quot;]</div><div class="line">USER superset</div></pre></td></tr></table></figure>
+<p>构建完毕后，即可启动环境——</p>
+<ul>
+<li>启动镜像</li>
+</ul>
+<p><code>docker run --detach --name superset -p 8088:8088 superset</code></p>
+<ul>
+<li>初始化账户</li>
+</ul>
+<p><code>docker exec -it superset superset-init</code></p>
+<p>好了，打开你的浏览器，进入 <code>http://localhost:8088</code> 使用 Superset 吧！</p>
+<h3 id="Superset-的一些基本概念"><a href="#Superset-的一些基本概念" class="headerlink" title="Superset 的一些基本概念"></a>Superset 的一些基本概念</h3><ul>
+<li>Database：一个数据源，比如 Hive 里的一个数据库 </li>
+<li>Table：查询数据表，目前在 Superset 中任何一张可视化图都是基于 <strong>一个</strong> Table的。也就是说，如果需要对连表数据进行可视化，需要先通过创建相应的 Query，并把 Query 结果转化为一个 Superset 中的 Table 才行。</li>
+<li>Slice：基于 Table 的一个查询。任何可视化都是基于一个 Slice 的查询结果而构建的。</li>
+<li>Visualization：基于一个 Slice 实现的可视化图，官方包自带了几乎所有的常见图标类型。</li>
+<li>Dashboard：一组 Visualization 的集合。</li>
+<li>Metrics：对聚合（Group）数据进行处理的方法——<strong>要注意，创建表时默认的 metrics 只有 Count 一种，这比较让人困惑，因为此时在 Group By 数据以后，在 y 轴上只能选择计数，而无法选择其他处理方式比如 Avg。解决方法是直接进入表编辑，通过 SQL 语法为其创建其他 metrics，再进入可视化编辑器选择。</strong></li>
+</ul>
+<p>了解了这些概念，在界面上点点用用，估计你就能掌握 Superset 的基本用法啦。具体我这里就不展开了，有问题可以参考<a href="https://superset.incubator.apache.org" target="_blank" rel="external">官方文档</a>。</p>
+<h3 id="Superset-与其他企业级-BI-工具的比较"><a href="#Superset-与其他企业级-BI-工具的比较" class="headerlink" title="Superset 与其他企业级 BI 工具的比较"></a>Superset 与其他企业级 BI 工具的比较</h3><p>在当前版本（0.19.x），我认为，Superset 与其他企业级 BI 工具（如 Tableau、QlickView等）相比，最大的不同在于，<strong>其目标用户更多的是数据分析师、数据科学家，而非一般企业中的业务人员，因为其对用户的数据分析基本技能（如 SQL 等），要求更高。</strong></p>
+<p>长久以来，在应用企业 BI 时，我认为业界一直有一种迷思，也就是希望业务人员有能力去操作 BI 软件（比如创建不同图表类型、对不同数据维度进行组合、下钻等）。为了尽可能的让他们获取这种能力，当前的 BI 软件都尽可能得做的“非常傻瓜”，比如只要通过拖拉即可组合数据维度、通过点击即可设置各种图表属性。尽管如此，但在实际情况中，根据我的观察，有这样能力的业务用户绝对不超过 5%，以至于在所谓的 “BI” 部门中，敢说自己精通公司 BI 软件的，可能也不超过三成（明明有 BI 工具和大量数据源，每个月最后还是在离线拉数据、做 Excel 报表）。此时，公司的 IT 部门会怎么做呢？答案是用乙方——基于 BI 软件再二次开发一套报表系统出来，当中内嵌好预先设定好的数据报表。在这样的情况下，无论软件如何“傻瓜化”，没有基础技能的用户仍然不会去使用，而对数据分析师、科学家来说，这样的傻瓜化所牺牲的灵活度，又显得过于小儿科了。</p>
+<p>Superset 则索性走出了这一矛盾。可以说，如果你不具备一定的基础开发能力，是很难去使用 Superset 的。不管是基于已有表去创建新的表作为数据源，还是创建 metrics，都需要用户自行去定义一些 SQL 语句。把数据分析的活儿彻底交还给数据分析专家去吧——业务人员安安心心去看 Dashboard 就好。当然，你可以说这是因为 Superset 还在早期，暂时没有顾上这方面的需求，但我对这一观点存疑——从界面上无处不在的 SQL 一词即可看出，这不是 Superset 想要发展的方向。 </p>
+<p>当然，Superset 目前仍然是一个快速发展中的孵化项目，未来变化也难预料。相比其他 BI 软件，坑较多，Bug 也不少，这都是上生产需要考虑的现实因素。奈何人家是开源的不是？比起 Tableau 动辄上万的 License（别误会，我是 Tableau 的大粉丝！），自己去填填坑也是应该的。</p>
+<p>最后，发张 Demo 图吧。不好意思，好像打了很多码的样子 :)</p>
+<p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202017-08-05%20at%203.22.34%20PM.png" alt="Superset Demo"></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2017/07/13/not-everyone-can-become-a-pm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1927,7 +2119,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">文章</span>
               </a>
             </div>
@@ -1938,7 +2130,7 @@
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分類</span>
               
             </div>
@@ -1949,7 +2141,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">標籤</span>
               </a>
             </div>
