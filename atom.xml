@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xraywu.github.io/"/>
-  <updated>2018-02-15T02:26:26.256Z</updated>
+  <updated>2018-02-15T02:30:55.599Z</updated>
   <id>http://xraywu.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://xraywu.github.io/2018/02/14/express-vpn-with-xiaomi-router/"/>
     <id>http://xraywu.github.io/2018/02/14/express-vpn-with-xiaomi-router/</id>
     <published>2018-02-14T06:06:16.000Z</published>
-    <updated>2018-02-15T02:26:26.256Z</updated>
+    <updated>2018-02-15T02:30:55.599Z</updated>
     
     <content type="html">&lt;p&gt;&lt;a href=&quot;https://www.expressvpn.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;ExpressVPN&lt;/a&gt;（需翻墙）是一家美国 VPN 供应商，提供同时在线 3 台设备、不限流量的高质量收费 VPN 服务。其服务器遍布全球，支持多种协议（PPTP、L2TP 或 OpenVPN）和多种设备客户端（包括移动、桌面、路由器甚至 PS 游戏机等）。简单来说，是市面上最好的收费 VPN 服务之一。当然，高质量的服务收费也很感人，一次性购买一年的费用高达 100 刀！不过，考虑这两年的国内网络环境，这样稳定的梯子实在是不可奢求更多。这不，前几天我就咬咬牙入手了一个账号，果然生活质量得到了极大的提高~&lt;/p&gt;
 &lt;p&gt;花了这么多钱买的梯子，自然想不只是简单在设备上简单使用啦（况且来回切换网络也很麻烦）。想了想，决定在家里原有路由器之外，再搭个翻墙路由，也好让买了许久，却因为网络环境吃灰许久的 Amazon Echo 能在无墙网络里用起来。看了一圈，决定入手个小米路由器3G。本以为其自带的 VPN 设置可以轻松完成任务，却发现小米路由器固件只支持简单的 L2TP 协议（都没有IPSec！）。折腾了两天，终于把它改造好了。下面做些记录，以备不时之需（你懂的）。&lt;/p&gt;
