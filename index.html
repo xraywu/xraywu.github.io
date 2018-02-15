@@ -278,6 +278,194 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2018/02/14/express-vpn-with-xiaomi-router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="人型叮當貓">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/default_avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anthroraemon  |  人型叮當貓">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/02/14/express-vpn-with-xiaomi-router/" itemprop="url">
+                  使用 ExpressVPN 和小米路由器搭建翻墙路由
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">發表於</span>
+              
+              <time title="創建於" itemprop="dateCreated datePublished" datetime="2018-02-14T14:06:16+08:00">
+                2018-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/动动手/" itemprop="url" rel="index">
+                    <span itemprop="name">动动手</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/02/14/express-vpn-with-xiaomi-router/" class="leancloud_visitors" data-flag-title="使用 ExpressVPN 和小米路由器搭建翻墙路由">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">閱讀次數 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://www.expressvpn.com" target="_blank" rel="external">ExpressVPN</a>（需翻墙）是一家美国 VPN 供应商，提供同时在线 3 台设备、不限流量的高质量收费 VPN 服务。其服务器遍布全球，支持多种协议（PPTP、L2TP 或 OpenVPN）和多种设备客户端（包括移动、桌面、路由器甚至 PS 游戏机等）。简单来说，是市面上最好的收费 VPN 服务之一。当然，高质量的服务收费也很感人，一次性购买一年的费用高达 100 刀！不过，考虑这两年的国内网络环境，这样稳定的梯子实在是不可奢求更多。这不，前几天我就咬咬牙入手了一个账号，果然生活质量得到了极大的提高~</p>
+<p>花了这么多钱买的梯子，自然想不只是简单在设备上简单使用啦（况且来回切换网络也很麻烦）。想了想，决定在家里原有路由器之外，再搭个翻墙路由，也好让买了许久，却因为网络环境吃灰许久的 Amazon Echo 能在无墙网络里用起来。看了一圈，决定入手个小米路由器3G。本以为其自带的 VPN 设置可以轻松完成任务，却发现小米路由器固件只支持简单的 L2TP 协议（都没有IPSec！）。折腾了两天，终于把它改造好了。下面做些记录，以备不时之需（你懂的）。</p>
+<h3 id="获取小米路由器的-Root-权限"><a href="#获取小米路由器的-Root-权限" class="headerlink" title="获取小米路由器的 Root 权限"></a>获取小米路由器的 Root 权限</h3><p>小米路由器默认出厂刷的是稳定版，要获取 Root 权限，首先需要去其官网<a href="http://www1.miwifi.com/miwifi_download.html" target="_blank" rel="external">下载相应型号的最新开发版 ROM</a> 并刷机。下载完 ROM 后，从浏览器访问<code>192.168.3.1</code>进入小米路由器默认的管理后台，在右上角菜单中选择系统升级，并选择刚刚下载的升级包进行安装。安装完成后，等待路由器重启完成。</p>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.21.16%20AM.png" target="_blank" rel="external">!小米下载开发板ROM</a></p>
+<p>安装完开发版系统后，需要使用小米官方提供的 (Root 工具)[<a href="http://d.miwifi.com/rom/ssh]。需要注意的是，下载链接需要通过小米路由器提供的网络进入，并且需要登录小米账号。" target="_blank" rel="external">http://d.miwifi.com/rom/ssh]。需要注意的是，下载链接需要通过小米路由器提供的网络进入，并且需要登录小米账号。</a></p>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.21.21%20AM.png" target="_blank" rel="external">!小米下载ROOT工具</a></p>
+<p>下载 Root 工具后，不要修改文件名（<code>miwifi.bin</code>），并且将文件拷到 U 盘中。将 U 盘插入小米路由器，断电，然后按住 Reset 键不放再恢复电源。按住 Reset 键并开机约 10 秒后（官网说 3-5 秒，实测需要按更长一些），会进入刷机模式，放开 Reset 键，等刷机完成后重新启动。重启完成后，路由器的 SSH 登录即被激活。此时，使用如下命令 SSH 远程连接设备若成功（Root 密码在下载 Root 工具时会在小米官网上显示），证明已经获得路由器 Root 权限。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; ssh root@192.168.3.1</div></pre></td></tr></table></figure>
+<h3 id="刷入-Breed-启动器以及-Padavan-固件"><a href="#刷入-Breed-启动器以及-Padavan-固件" class="headerlink" title="刷入 Breed 启动器以及 Padavan 固件"></a>刷入 Breed 启动器以及 Padavan 固件</h3><p>为了能够刷入第三方固件，我们首先需要刷入 Bootloader。目前，<a href="https://breed.hackpascal.net/" target="_blank" rel="external">Breed</a>是小米路由器最常使用的启动器。进入上面的下载地址，找到相应型号的安装文件（比如小米路由器3G 对应 <code>breed-mt7621-xiaomi-r3g.bin</code>）并下载。下载后，将安装文件拷贝到路由器上——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; scp ./breed-mt7621-xiaomi-r3g.bin root@192.168.31.1:/tmp/</div></pre></td></tr></table></figure>
+<p>之后，由于在刷入 Bootloader 并进入控制台时会处于无网络状态，我们同样可以先准备好第三方固件。目前，一个被大家广泛使用的固件是<code>Padavan</code>，俗称“老毛子”固件。Padavan 固件功能非常强大，在这里，最重要的是其 VPN 客户端支持 <strong>OpenVPN</strong>。你可以在<a href="http://www.right.com.cn/forum/thread-161324-1-1.html" target="_blank" rel="external">这里</a>下载到由中国开发者汉化并扩展的最新版固件。</p>
+<p>拷贝完成后，将小米路由器与其他路由设备（如光猫等）断开，并且使用网线，将路由器的 WAN 口与 PC 连接 <strong>（重要！）</strong>。</p>
+<p>然后同样 SSH 远程登录路由器，并且执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; mtd -r write /tmp/breed-mt7621-xiaomi-r3g.bin Bootloader</div></pre></td></tr></table></figure>
+<p>执行后，路由器会自动重启。重启后，和刷入 Root 时一样的操作，断电，按住 Reset 不放再开机等待 10 秒。完成后，可以进入刷机模式，通过 <code>192.168.1.1</code> 进入 Breed 控制台，就可以通过 Breed 刷入 Padavan 了。选择左边菜单栏中的<code>固件更新</code>，并且在<code>固件</code>一栏中选择前面下载的 Padavan ROM 安装包。确认更新后等待更新进度条完成，路由器会自动重启，就安装完成啦。此时，你可以将路由器重新连回光猫或外网接口，然后访问 <code>192.168.123.1</code> 进入 Padavan 的管理后台。Padavin 相关的默认密码如下——</p>
+<ul>
+<li>后台：admin@admin:192.168.123.1</li>
+<li>SSH：admin@admin:192.168.123.1</li>
+<li>Wifi 密码：1234567890</li>
+</ul>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.18.38%20AM.png" target="_blank" rel="external">!Breed 控制台</a></p>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.18.47%20AM.png" target="_blank" rel="external">!Breed 刷入固件</a></p>
+<p>好了，下一步就是在 Padavan 控制台上配置 ExpressVPN 实现翻墙路由了！</p>
+<h3 id="使用-OpenVPN-连接-ExpressVPN"><a href="#使用-OpenVPN-连接-ExpressVPN" class="headerlink" title="使用 OpenVPN 连接 ExpressVPN"></a>使用 OpenVPN 连接 ExpressVPN</h3><p>首先，在这里，我们假设你已经购买了 ExpressVPN 的服务。正如上文所说，基于 L2TP 协议的 VPN 在目前的网络状况下几乎没有成功连接的可能性。因此，在开始配置之前，你需要访问首先访问 ExpressVPN，获取你的 OpenVPN 信息。在<a href="https://www.expressvpn.com/setup#manual" target="_blank" rel="external">这个页面</a>，你能够找到你的 OpenVPN 账号和密码、ExpressVPN 各个服务器的 OpenVPN 配置文件（<code>.ovpn 文件</code>）、以及访问需要的证书和公私钥。记录或下载后，进入 Padavan 后台开始配置。</p>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-14%20at%209.09.33%20PM.png" target="_blank" rel="external">!获取ExpressVPN的OpenVPN文件</a></p>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-14%20at%209.10.09%20PM.png" target="_blank" rel="external">!获取ExpressVPN的OpenVPN密钥和证书</a></p>
+<p>点击 Padavan 后台左侧菜单栏的<code>VPN Client</code>一项，选择<code>Enable VPN Client</code>。由于 Padavan 的 OpenVPN 客户端只支持手工配置，你需要从你下载的服务器配置文件中提取出服务器地址——使用任何文本编辑器即可打开配置文件，在文件中你可以找到相应的服务器地址，然后对以下选项做如下修改——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- VPN Client Protocol: OpenVPN</div><div class="line">- Remote VPN Server (IP or DNS host): 服务器地址</div><div class="line">- Port: 1195 (ExpressVPN 没有使用默认的 1194 端口)</div><div class="line">- Authentication type: TLS: client.crt/client.key</div><div class="line">- Authentication Algorithm:	SHA-512, 512 bit</div><div class="line">- Encryption Cipher Algorithm: AES, 256 bit</div><div class="line">- Obtaining DNS from VPN Server: Replacing all existing</div><div class="line">- Route All Traffic through the VPN interface: Yes</div></pre></td></tr></table></figure>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.12.20%20AM.png" target="_blank" rel="external">!OpenVPN 配置1</a></p>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.12.29%20AM.png" target="_blank" rel="external">!OpenVPN 配置2</a></p>
+<p>之后，还需要配置一些额外的参数。点击界面上的 <code>OpenVPN Extended Configuration</code> 链接，展开文本框中填入以下内容——</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">remote-cert-tls server</div><div class="line">persist-key</div><div class="line">persist-tun</div><div class="line">fragment 1300</div><div class="line">mssfix 1450</div><div class="line">keysize 256</div><div class="line">auth-user-pass /etc/storage/auth.txt</div></pre></td></tr></table></figure>
+<p><a href="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.12.37%20AM.png" target="_blank" rel="external">!OpenVPN 扩展配置</a></p>
+<p>完成后，先点击保存按钮。页面刷新后，点击页面的第二个 tab 选项（<code>OpenVPN Certificates &amp; Keys</code>），在四个文本框中，<strong>依次</strong> 填入下载的公私钥文件中的 <code>ca.crt</code>、<code>client.crt</code>、<code>client.key</code>、<code>ta.key</code> 文件中的内容，点击保存。</p>
+<p>最后，由于 ExpressVPN 连接时除了公私钥还同时还需要用户名密码，我们需要把用户名密码写入上面扩展配置里指定的  <code>/etc/storage/auth.txt</code> 文件中。SSH 远程登录路由器后，新建该文件，并且将用户名密码作为内容输入（各一行），保存。完成后，回到管理后台，依次点击 <code>Administration</code> -&gt; <code>Settings</code> -&gt; <code>Commit Internal Storage to Flash Memory Now</code>，以防设备重启后丢失该文件。这样一来，OpenVPN 就配置完成啦。路由器此时会自动拨号连接，如果成功的话，在服务器右侧会有绿色的 <code>Connected</code> 提示，表明 VPN 就成功连接了。需要注意的是，尽管使用了 OpenVPN 协议，ExpressVPN 的不少服务器在国内依然很难连上。多试几个吧，毕竟 ExpressVPN 的服务器好多呢。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2017/08/06/an-introduction-to-superset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1903,180 +2091,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://xraywu.github.io/2015/11/06/hackathon-thoughts/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="人型叮當貓">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/default_avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anthroraemon  |  人型叮當貓">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/11/06/hackathon-thoughts/" itemprop="url">
-                  关于Hackathon的一些Learnings
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">發表於</span>
-              
-              <time title="創建於" itemprop="dateCreated datePublished" datetime="2015-11-06T15:15:33+08:00">
-                2015-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分類於</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/人月神话/" itemprop="url" rel="index">
-                    <span itemprop="name">人月神话</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2015/11/06/hackathon-thoughts/" class="leancloud_visitors" data-flag-title="关于Hackathon的一些Learnings">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">閱讀次數 </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这周公司组织了个Hackathon活动，叫上了两家Vendor分别组队比赛。作为一家逐渐从外包转向In-house的甲方公司，是不错的尝试。然而作为公司队一员的我深切的感受到，我们在内部开发的路上还有很远的路要走。与Vendor相比，差距不仅仅是在团队编程能力上的，更体现在项目管理、团队协作、DevOps等方方面面。</p>
-<p><strong>1. 总体参后感</strong></p>
-<p>因为公司性质，公司团队是跨国组成的（英国 - 1个PM、1个设计师、3个Developer，美国 - 2个Developer， 中国 - 1个Developer，本人）。跨国团队的最大好处是可以保证24小时都有人能精力充沛的工作，但坏处也很明显，沟通成本实在太高了。比赛的主赛场在英国，因此宣布比赛题目时，美国和中国都并不在线，无法参与初始讨论及Brainstorming，所以对整体项目的贡献几乎仅限于Coding。于此同时英国团队几乎主宰了整个Hackaton过程的走向 - 例如我写完的功能模块因为视觉原因被在英国的设计师否定了，（中国时间）一夜之间英国团队又重写了同样的模块，只是用了不同的前端实现。这对仅仅2天的Hackathon活动几乎是致命的，有这点时间英国团队完全可以添加更多的功能模块 - 这对我们最终的Delivery产生了重大的影响，而重写这一决定是完全没有involve中国讨论的。总的来说，在Hackathon这样短时间高强度的活动里，PM和设计师（几乎就是半个Product Owner了）需要非常清晰地控制进度及定义任务。对于跨国团队更是如此，尤其是其中大半时间因为时差原因他们对其他团队成员是unavailable的。顺带一提，Hackathon这样的比赛我们真的需要一个专职PM吗？Hackathon本身再适合agile不过了（同时公司里大家都自称懂agile），却找来一个发挥不了作用的PM导致最后大家几乎都只能自由发挥也是无力吐槽……</p>
-<p>同时，应该有人整体负责技术的选型，而这个人不应该是（不懂开发的）PM - 本身在Hackathon开始前我们是选定了一个基于<code>MEAN Stack</code>的框架的，然而队伍中相当多的成员没有事先阅读文档熟悉框架，导致实际开发中只能各自使用擅长的技术，极大地拉低了开发效率。顺带一提，这个框架看下来还是相当适合Hackathon的 - <a href="https://github.com/jxm262/hackathon-starter-ejs" target="_blank" rel="external">Hackathon-Starter-EJS</a>。</p>
-<p><strong>2. 代码管理</strong></p>
-<p>Git! Git! Git! 重要的事情要说三遍。虽说Git已经是普及的不能再普及了，可是似乎学校里仍然不会教，中外莫不如此。我们的英国团队虽然有3个Developer，但两个都是非常Junior的学生级开发。虽然编程能力不差，但习惯了单打独斗的他们居！然！完！全！不！会！用！Git！！ 这在这种虚拟合作的环境下几乎是致命的。第一天中国时间结束交接到英国后，他们几乎弄乱了所有的Branch - 更糟糕的是他们做出了删除全部Branch重新push code并只在master branch上工作的决定。。。这导致我们损失了不少其他Branch上的代码，只能再找Working copy去手工merge。说到底代码管理真的没什么可说的，每个人都应该熟悉Git和Best practice。</p>
-<p><strong>3. 团队协作</strong></p>
-<p>这次Hackathon中我们选用了Slack和Trello用于团队合作。工具是好工具，可是实际使用中因为种种原因效果大打折扣。Slack中由于消息比较多，经常导致别人不读离线时的信息，哪怕@本人的信息，从而导致错过一些重要的信息。当然，现在看来，Slack中就不应该放太过重要的信息。要么放到Git的Readme中，要么放到Trello中。</p>
-<p>至于Trello的使用，和PM如何管项目是息息相关的。在Hackathon的第一天中大家就应该清楚地把要实现的功能都定义清楚，并好好分配任务和Backlog。然后大家才知道自己要做什么，如果有多余的精力又可以帮助到哪里，而不是走一步看一步，不停地修改Trello cards。</p>
-<p>另外则是团队的交接问题。因为团队地理问题，交接的大概顺序是 <code>英国 -&gt; 美国 -&gt; 中国 -&gt; 英国</code>。由于交接时间都是一方的大清晨，前一天晚上工作到比较晚的开发时常不能参加，而这是相当致命的。两次传达以后信息的损失是相当严重的，尤其是当第一手信息只能传达给PM或设计师时，无法直接澄清相当多的技术细节问题。</p>
-<p><strong>4. DevOps</strong></p>
-<p>在Hackathon中，纯DevOps不那么重要，尤其是整个内部团队对DevOps还很不熟悉的时候（当然上述的方方面面理论上都属于DevOps）。然而具体到技术上，看起来如果能使用自动化部署还是相当有帮助的 - 团队的不少开发并不熟悉AWS和Linux，导致他们在简单地部署上浪费了太多时间（正常情况下他们只需要SSH到远程机器上并Pull master就好）。如果我们一开始就设置了自动化部署，就可以把这一步完全省略了。虽然这只是一个非常简单的任务。</p>
-<p><strong>Technology Notes</strong></p>
-<ul>
-<li>AWS上Bitnami的MEAN Stack Image是有Application Password的，主要用于登陆MongoDB Admin账号，可以在EC2的system log里面查到。</li>
-<li>MongoDB的客户端选择上使用<code>MongoChef</code>，很流行的<code>Robomongo</code>似乎远程连接时有authentication问题。Bitnami stack自带的Web界面的<code>Mongorock</code>需要SSL Tunnel，同时也有一些使用上的问题。</li>
-<li><code>Nodemon</code>是一个好包，一旦代码有修改能自动重启node.js web server。安装：<code>npm install nodemon -g</code>；运行：<code>nodemon app.js</code></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -2119,7 +2140,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">文章</span>
               </a>
             </div>
@@ -2130,7 +2151,7 @@
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分類</span>
               
             </div>
@@ -2141,7 +2162,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">29</span>
                 <span class="site-state-item-name">標籤</span>
               </a>
             </div>
@@ -2190,7 +2211,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
