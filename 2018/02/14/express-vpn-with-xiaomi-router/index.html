@@ -103,7 +103,7 @@
 <meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.12.20%20AM.png">
 <meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.12.29%20AM.png">
 <meta property="og:image" content="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.12.37%20AM.png">
-<meta property="og:updated_time" content="2018-02-15T02:32:56.386Z">
+<meta property="og:updated_time" content="2018-02-15T07:01:48.969Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 ExpressVPN 和小米路由器搭建翻墙路由">
 <meta name="twitter:description" content="ExpressVPN（需翻墙）是一家美国 VPN 供应商，提供同时在线 3 台设备、不限流量的高质量收费 VPN 服务。其服务器遍布全球，支持多种协议（PPTP、L2TP 或 OpenVPN）和多种设备客户端（包括移动、桌面、路由器甚至 PS 游戏机等）。简单来说，是市面上最好的收费 VPN 服务之一。当然，高质量的服务收费也很感人，一次性购买一年的费用高达 100 刀！不过，考虑这两年的国内网络">
@@ -399,7 +399,7 @@
 <p>花了这么多钱买的梯子，自然想不只是简单在设备上简单使用啦（况且来回切换网络也很麻烦）。想了想，决定在家里原有路由器之外，再搭个翻墙路由，也好让买了许久，却因为网络环境吃灰许久的 Amazon Echo 能在无墙网络里用起来。看了一圈，决定入手个小米路由器3G。本以为其自带的 VPN 设置可以轻松完成任务，却发现小米路由器固件只支持简单的 L2TP 协议（都没有IPSec！）。折腾了两天，终于把它改造好了。下面做些记录，以备不时之需（你懂的）。</p>
 <h3 id="获取小米路由器的-Root-权限"><a href="#获取小米路由器的-Root-权限" class="headerlink" title="获取小米路由器的 Root 权限"></a>获取小米路由器的 Root 权限</h3><p>小米路由器默认出厂刷的是稳定版，要获取 Root 权限，首先需要去其官网<a href="http://www1.miwifi.com/miwifi_download.html" target="_blank" rel="external">下载相应型号的最新开发版 ROM</a> 并刷机。下载完 ROM 后，从浏览器访问<code>192.168.3.1</code>进入小米路由器默认的管理后台，在右上角菜单中选择系统升级，并选择刚刚下载的升级包进行安装。安装完成后，等待路由器重启完成。</p>
 <p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.21.16%20AM.png" alt="小米下载开发板ROM"></p>
-<p>安装完开发版系统后，需要使用小米官方提供的 (Root 工具)[<a href="http://d.miwifi.com/rom/ssh]。需要注意的是，下载链接需要通过小米路由器提供的网络进入，并且需要登录小米账号。" target="_blank" rel="external">http://d.miwifi.com/rom/ssh]。需要注意的是，下载链接需要通过小米路由器提供的网络进入，并且需要登录小米账号。</a></p>
+<p>安装完开发版系统后，需要使用小米官方提供的 <a href="http://d.miwifi.com/rom/ssh" target="_blank" rel="external">Root 工具</a>。需要注意的是，下载链接需要通过小米路由器提供的网络进入，并且需要登录小米账号。</p>
 <p><img src="http://7xp1ay.com1.z0.glb.clouddn.com/Screen%20Shot%202018-02-15%20at%2010.21.21%20AM.png" alt="小米下载ROOT工具"></p>
 <p>下载 Root 工具后，不要修改文件名（<code>miwifi.bin</code>），并且将文件拷到 U 盘中。将 U 盘插入小米路由器，断电，然后按住 Reset 键不放再恢复电源。按住 Reset 键并开机约 10 秒后（官网说 3-5 秒，实测需要按更长一些），会进入刷机模式，放开 Reset 键，等刷机完成后重新启动。重启完成后，路由器的 SSH 登录即被激活。此时，使用如下命令 SSH 远程连接设备若成功（Root 密码在下载 Root 工具时会在小米官网上显示），证明已经获得路由器 Root 权限。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ssh root@192.168.3.1</div></pre></td></tr></table></figure>
